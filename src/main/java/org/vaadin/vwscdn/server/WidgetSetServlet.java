@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.vaadin.cdn.server;
+package org.vaadin.vwscdn.server;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,7 +17,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.vaadin.cdn.server.WSCompilerService;
+import org.vaadin.vwscdn.server.WSCompilerService;
 
 /**
  * Standalone servlet that serves the WidgetSet files.

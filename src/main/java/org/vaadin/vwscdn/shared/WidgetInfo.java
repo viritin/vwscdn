@@ -3,29 +3,28 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.vaadin.cdn.server;
+package org.vaadin.vwscdn.shared;
 
 import com.vaadin.ui.Component;
-import com.vaadin.ui.TextField;
 
 /**
  *
  * @author se
  */
-public class ComponentInfo {
+public class WidgetInfo {
 
     String fqn;
     String version;
 
-    public ComponentInfo() {
+    public WidgetInfo() {
     }
 
-    public ComponentInfo(Class<? extends Component> aClass) {
+    public WidgetInfo(Class<? extends Component> aClass) {
         fqn = aClass.getCanonicalName();
         version = null;
     }
 
-    public ComponentInfo(String fqn, String version) {
+    public WidgetInfo(String fqn, String version) {
         this.fqn = fqn;
         this.version = version;
     }

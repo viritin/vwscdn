@@ -3,8 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.vaadin.cdn.server;
+package org.vaadin.vwscdn.server;
 
+import org.vaadin.vwscdn.shared.WidgetSetInfo;
+import org.vaadin.vwscdn.shared.WidgetInfo;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
@@ -30,8 +32,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
 import javax.ws.rs.Produces;
-import org.vaadin.cdn.shared.RemoteWidgetSet;
-import org.vaadin.se.utils.WidgetSetCompiler;
+import org.vaadin.vwscdn.shared.RemoteWidgetSet;
 
 /**
  *
@@ -98,7 +99,7 @@ public class WSCompilerService {
 
     private String buildId(WidgetSetInfo info) {
         StringBuilder hash = new StringBuilder();
-        for (ComponentInfo ci : info.getEager()) {
+        for (WidgetInfo ci : info.getEager()) {
             String fqn = ci.getFqn();
             hash.append(fqn);
             String v = ci.getVersion();
@@ -156,13 +157,13 @@ public class WSCompilerService {
         // TODO: We sound really index all the classes in addons and build an
         // index based on that. Now we just use the jar name
         List<Addon> includedAddons = new ArrayList<>();
-        for (ComponentInfo ci : info.getEager()) {
-            if (ci.fqn.startsWith("addon:")) {
-                Addon match = findAddon(ci.fqn.substring(6), ci.version, allAddons);
+        for (WidgetInfo ci : info.getEager()) {
+            if (ci.getFqn().startsWith("addon:")) {
+                Addon match = findAddon(ci.getFqn().substring(6), ci.getVersion(), allAddons);
                 if (match != null) {
                     includedAddons.add(match);
                 } else {
-                    Logger.getLogger(WSCompilerService.class.getName()).log(Level.WARNING, "Addon not found " + ci.fqn.substring(6));
+                    Logger.getLogger(WSCompilerService.class.getName()).log(Level.WARNING, "Addon not found " + ci.getFqn().substring(6));
 
                 }
             }
@@ -173,7 +174,7 @@ public class WSCompilerService {
         }
         wss.add("com.vaadin.DefaultWidgetSet");
 
-        // Generate WidgetSet XML
+        // Generate WidgetSetInfo XML
         try {
             generateGwtXml(GEN_SRC_DIR, wsName, wss);
         } catch (IOException ex) {

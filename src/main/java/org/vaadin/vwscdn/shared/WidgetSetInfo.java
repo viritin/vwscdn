@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.vaadin.cdn.server;
+package org.vaadin.vwscdn.shared;
 
+import org.vaadin.vwscdn.shared.WidgetInfo;
 import java.util.List;
 
 /**
@@ -14,8 +15,8 @@ import java.util.List;
 public class WidgetSetInfo {
     
     String vaadinVersion;
-    List<ComponentInfo> eager;
-    List<ComponentInfo> lazy;
+    List<WidgetInfo> eager;
+    List<WidgetInfo> lazy;
     
     public WidgetSetInfo() {
     }
@@ -28,19 +29,19 @@ public class WidgetSetInfo {
         this.vaadinVersion = vaadinVersion;
     }
 
-    public List<ComponentInfo> getEager() {
+    public List<WidgetInfo> getEager() {
         return eager;
     }
 
-    public void setEager(List<ComponentInfo> eager) {
+    public void setEager(List<WidgetInfo> eager) {
         this.eager = eager;
     }
 
-    public List<ComponentInfo> getLazy() {
+    public List<WidgetInfo> getLazy() {
         return lazy;
     }
 
-    public void setLazy(List<ComponentInfo> lazy) {
+    public void setLazy(List<WidgetInfo> lazy) {
         this.lazy = lazy;
     }
 }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.vaadin.cdn.client;
+package org.vaadin.vwscdn.client;
 
 import com.vaadin.server.BootstrapFragmentResponse;
 import com.vaadin.server.BootstrapListener;
@@ -19,9 +19,9 @@ import javax.ws.rs.core.MediaType;
 import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.vaadin.cdn.server.ComponentInfo;
-import org.vaadin.cdn.server.WidgetSetInfo;
-import org.vaadin.cdn.shared.RemoteWidgetSet;
+import org.vaadin.vwscdn.shared.WidgetInfo;
+import org.vaadin.vwscdn.shared.WidgetSetInfo;
+import org.vaadin.vwscdn.shared.RemoteWidgetSet;
 
 /**
  *
@@ -49,7 +49,7 @@ public class WidgetSetCDNClient {
                 .post(Entity.json(info), RemoteWidgetSet.class);
     }
 
-    public RemoteWidgetSet getWidgetSetURL(String vaadinVersion, ComponentInfo... componentInfo) {
+    public RemoteWidgetSet getWidgetSetURL(String vaadinVersion, WidgetInfo... componentInfo) {
         WidgetSetInfo info = new WidgetSetInfo();
         info.setVaadinVersion(vaadinVersion);
         info.setEager(Arrays.asList(componentInfo));
