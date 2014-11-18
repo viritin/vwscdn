@@ -40,6 +40,4 @@ public class WidgetSetInfo {
     public void setLazy(List<ComponentInfo> lazy) {
         this.lazy = lazy;
     }
-    
-    
 }
