@@ -1,4 +1,4 @@
-package org.vaadin.cdn.rest;
+package org.vaadin.cdn.server;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;

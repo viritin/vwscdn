@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.vaadin.cdn.rest;
+package org.vaadin.cdn.server;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -30,6 +30,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
 import javax.ws.rs.Produces;
+import org.vaadin.cdn.shared.RemoteWidgetSet;
 import org.vaadin.se.utils.WidgetSetCompiler;
 
 /**
@@ -41,21 +42,20 @@ import org.vaadin.se.utils.WidgetSetCompiler;
 public class WSCompilerService {
 
     //TODO: make this dynamic
-    private String publicWidgetSetBaseURL = "http://localhost:8080/vaadin-wscdn-1.0-SNAPSHOT/ws/";
+    private final String publicWidgetSetBaseURL = "http://localhost:8080/vaadin-wscdn-1.0-SNAPSHOT/ws/";
 
     //TODO: make this dynamic
-    private File PUBLIC_ROOT_DIR = new File("/Users/se/ws/public");
-    private File COMPILER_ROOT_DIR = new File("/Users/se/ws/compiler");
-    private File GEN_SRC = new File(COMPILER_ROOT_DIR, "tmp-src");
-    private File TMP = new File(COMPILER_ROOT_DIR, "tmp");
-    private File VAADIN_JAR_DIR = new File(COMPILER_ROOT_DIR, "vaadin");
-    private File ADDON_JAR_DIR = new File(COMPILER_ROOT_DIR, "addons");
+    private final File COMPILER_ROOT_DIR = new File("/Users/se/ws/compiler");
+    private final File GEN_SRC_DIR = new File(COMPILER_ROOT_DIR, "tmp-src");
+    private final File TMP_DIR = new File(COMPILER_ROOT_DIR, "tmp");
+    private final File VAADIN_JAR_DIR = new File(COMPILER_ROOT_DIR, "vaadin");
+    private final File ADDON_JAR_DIR = new File(COMPILER_ROOT_DIR, "addons");
     private List<Addon> allAddons;
 
     public WSCompilerService() {
     }
 
-    private static String NA = "error";
+    private static final String NA = "error";
 
     @Produces("text/plain")
     @GET
@@ -68,9 +68,9 @@ public class WSCompilerService {
     @POST
     @Path("/compile")
     @Consumes("application/json")
-    public String compileWidgetSet(WidgetSetInfo info) {
+    public RemoteWidgetSet compileWidgetSet(WidgetSetInfo info) {
         if (info == null) {
-            return NA;
+            return new RemoteWidgetSet();
         }
 
         // Create hash from component data 
@@ -86,15 +86,18 @@ public class WSCompilerService {
 
         // Return a URL to the public widgetset
         if (widgetset != null) {
-            return publicWidgetSetBaseURL + widgetset;
+            RemoteWidgetSet res = new RemoteWidgetSet();
+            res.setWidgetSetName(widgetset);
+            res.setWidgetSetUrl(publicWidgetSetBaseURL + widgetset + "/" + widgetset + ".nocache.js");
+            return res;
         }
 
         // This should never happen
-        return NA;
+        return new RemoteWidgetSet();
     }
 
     private String buildId(WidgetSetInfo info) {
-        StringBuffer hash = new StringBuffer();
+        StringBuilder hash = new StringBuilder();
         for (ComponentInfo ci : info.getEager()) {
             String fqn = ci.getFqn();
             hash.append(fqn);
@@ -112,7 +115,7 @@ public class WSCompilerService {
             MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] thedigest = md.digest(bytesOfMessage);
 
-            StringBuffer hexString = new StringBuffer();
+            StringBuilder hexString = new StringBuilder();
 
             for (int i = 0; i < thedigest.length; i++) {
                 String hex = Integer.toHexString(0xFF & thedigest[i]);
@@ -128,16 +131,19 @@ public class WSCompilerService {
     }
 
     private String findPreCompiledWidgetset(String id) {
-        File wsFile = new File(PUBLIC_ROOT_DIR, id);
-        return (wsFile.exists() && wsFile.canRead())? id: null;
+        String wsName = "ws" + id;
+        File wsFile = new File(WidgetSetServlet.PUBLIC_ROOT_DIR, wsName);
+        return (wsFile.exists() && wsFile.canRead()) ? wsName : null;
     }
 
     private String gwtCompile(String id, WidgetSetInfo info) {
 
+        String wsName = "ws" + id;
+
         // Generate classpath
         List<File> cp = new ArrayList<File>();
         cp.addAll(getCoreJars(new File(VAADIN_JAR_DIR, info.getVaadinVersion())));
-
+        cp.add(GEN_SRC_DIR);
         // Intialize if not yet initialized
         if (allAddons == null) {
             allAddons = getAddonWidgetSets(ADDON_JAR_DIR);
@@ -145,12 +151,11 @@ public class WSCompilerService {
 
         // Generate widgetset file
         Set<String> wss = new HashSet<>();
-        wss.add("com.vaadin.DefaultWidgetSet");
 
         // Process all requested addons
         // TODO: We sound really index all the classes in addons and build an
         // index based on that. Now we just use the jar name
-        List<Addon> includedAddons = new ArrayList<Addon>();
+        List<Addon> includedAddons = new ArrayList<>();
         for (ComponentInfo ci : info.getEager()) {
             if (ci.fqn.startsWith("addon:")) {
                 Addon match = findAddon(ci.fqn.substring(6), ci.version, allAddons);
@@ -166,21 +171,22 @@ public class WSCompilerService {
             cp.add(addon.getJarFile());
             wss.addAll(addon.getWidgetsets());
         }
+        wss.add("com.vaadin.DefaultWidgetSet");
 
         // Generate WidgetSet XML
         try {
-            generateGwtXml(GEN_SRC, id, wss);
+            generateGwtXml(GEN_SRC_DIR, wsName, wss);
         } catch (IOException ex) {
             Logger.getLogger(WSCompilerService.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
 
         // Run the compiler
-        WidgetSetCompiler compiler = new WidgetSetCompiler(id, PUBLIC_ROOT_DIR, TMP, cp);
+        WidgetSetCompiler compiler = new WidgetSetCompiler(wsName, WidgetSetServlet.PUBLIC_ROOT_DIR, TMP_DIR, cp);
 
         try {
             compiler.compileWidgetset();
-            return id;
+            return wsName;
         } catch (Exception ex) {
             Logger.getLogger(WSCompilerService.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -197,17 +203,14 @@ public class WSCompilerService {
 
         PrintStream printStream = new PrintStream(new FileOutputStream(
                 widgetsetFile));
-        printStream.print("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<!DOCTYPE module PUBLIC \"-//Google Inc.//DTD "
-                + "Google Web Toolkit 1.7.0//EN\" \"http://google"
-                + "-web-toolkit.googlecode.com/svn/tags/1.7.0/dis"
-                + "tro-source/core/src/gwt-module.dtd\">\n");
+        printStream.print("<!DOCTYPE module PUBLIC \"-//Google Inc.//"
+                + "DTD Google Web Toolkit 2.5.1//EN\" \"http://google-"
+                + "web-toolkit.googlecode.com/svn/tags/2.5.1/distro-sou"
+                + "rce/core/src/gwt-module.dtd\">\n");
         printStream.print("<module>\n");
-
         for (String ws : includeWs) {
             printStream.print("<inherits name=\"" + ws + "\" />\n");
         }
-
         printStream.print("\n</module>\n");
         printStream.close();
     }

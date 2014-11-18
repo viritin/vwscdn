@@ -3,7 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.vaadin.cdn.rest;
+package org.vaadin.cdn.server;
+
+import com.vaadin.ui.Component;
+import com.vaadin.ui.TextField;
 
 /**
  *
@@ -13,6 +16,19 @@ public class ComponentInfo {
 
     String fqn;
     String version;
+
+    public ComponentInfo() {
+    }
+
+    public ComponentInfo(Class<? extends Component> aClass) {
+        fqn = aClass.getCanonicalName();
+        version = null;
+    }
+
+    public ComponentInfo(String fqn, String version) {
+        this.fqn = fqn;
+        this.version = version;
+    }
 
     public String getFqn() {
         return fqn;

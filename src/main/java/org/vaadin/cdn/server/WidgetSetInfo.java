@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.vaadin.cdn.rest;
+package org.vaadin.cdn.server;
 
 import java.util.List;
 
@@ -16,6 +16,9 @@ public class WidgetSetInfo {
     String vaadinVersion;
     List<ComponentInfo> eager;
     List<ComponentInfo> lazy;
+    
+    public WidgetSetInfo() {
+    }
 
     public String getVaadinVersion() {
         return vaadinVersion;
