@@ -179,6 +179,7 @@ public class WSCompilerService {
 
         // Generate WidgetSetInfo XML
         try {
+            generateConnectorBundleLoaderFactory(GEN_SRC_DIR, info.getEager());
             generateGwtXml(GEN_SRC_DIR, wsName, wss);
         } catch (IOException ex) {
             Logger.getLogger(WSCompilerService.class.getName()).log(Level.SEVERE, null, ex);
@@ -207,7 +208,7 @@ public class WSCompilerService {
 
         // Copy file and add/replace eager connectors
         try {
-            BufferedReader r = new BufferedReader(new InputStreamReader(WSCompilerService.class.getResourceAsStream(CONNECTOR_LOADER_TEMPLATE)));
+            BufferedReader r = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/"+CONNECTOR_LOADER_TEMPLATE)));
             PrintStream w = new PrintStream(new File(srcDir, CONNECTOR_LOADER_CLASSNAME + ".java"));
             String l = null;
             while ((l = r.readLine()) != null) {
