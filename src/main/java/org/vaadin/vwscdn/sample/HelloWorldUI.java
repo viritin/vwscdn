@@ -17,6 +17,9 @@ import javax.servlet.ServletException;
 import org.vaadin.vwscdn.client.WidgetSetCDNClient;
 import org.vaadin.vwscdn.shared.WidgetInfo;
 import org.vaadin.vwscdn.shared.RemoteWidgetSet;
+import com.vaadin.addon.charts.Chart;
+import com.vaadin.addon.charts.model.ChartType;
+import com.vaadin.addon.charts.model.DataSeries;
 
 @Theme("valo")
 @SuppressWarnings("serial")
@@ -26,20 +29,18 @@ public class HelloWorldUI extends UI {
     private Label clickCounterLabel;
 
     @WebServlet(value = {"/app/*", "/VAADIN/*"}, asyncSupported = true)
-    @VaadinServletConfiguration(productionMode = false, ui = HelloWorldUI.class)
+    @VaadinServletConfiguration(productionMode = false, ui = HelloWorldUI.class, widgetset = "org.vaadin.vwscdn.sample.AppWidgetSet")
     public static class Servlet extends VaadinServlet {
 
         @Override
         protected void servletInitialized() throws ServletException {
             super.servletInitialized();
 
-            //TODO: Here this is just hand crafted. Automate. Externalize.
-            WidgetSetCDNClient c = new WidgetSetCDNClient();
-            RemoteWidgetSet ws = c.getWidgetSetURL(VaadinServlet.PORTLET_CONTEXT, new WidgetInfo(TextField.class),
-                    new WidgetInfo(Label.class), new WidgetInfo("addon:vaadin-charts","1.1.7"));
+            WidgetSetCDNClient c = new WidgetSetCDNClient(getService());
 
-            // Get the widgetset            
-            getService().addSessionInitListener(new WidgetSetCDNClient.SessionInitListener(ws));
+            //TODO: Here this is just hand crafted. Automate. Externalize.
+            c.initRemoteWidgetset("7.3.4", new WidgetInfo(TextField.class),
+                    new WidgetInfo(Label.class), new WidgetInfo("addon:Vaadin Charts", "1.1.7"));
         }
 
     }
@@ -72,6 +73,9 @@ public class HelloWorldUI extends UI {
         });
 
         layout.addComponent(button);
+        Chart chart = new Chart(ChartType.PIE);
+        chart.getConfiguration().addSeries(new DataSeries(new String[]{"A", "B"}, new Number[]{1, 2, 3, 4}));
+        layout.addComponent(chart);
         layout.addComponent(clickCounterLabel = new Label("Clicks: 0"));
     }
 
