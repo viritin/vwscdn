@@ -16,10 +16,10 @@ import com.vaadin.ui.VerticalLayout;
 import javax.servlet.ServletException;
 import org.vaadin.vwscdn.client.WidgetSetCDNClient;
 import org.vaadin.vwscdn.shared.WidgetInfo;
-import org.vaadin.vwscdn.shared.RemoteWidgetSet;
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.ChartType;
 import com.vaadin.addon.charts.model.DataSeries;
+import org.vaadin.vwscdn.shared.WidgetSetInfo;
 
 @Theme("valo")
 @SuppressWarnings("serial")
@@ -29,7 +29,7 @@ public class HelloWorldUI extends UI {
     private Label clickCounterLabel;
 
     @WebServlet(value = {"/app/*", "/VAADIN/*"}, asyncSupported = true)
-    @VaadinServletConfiguration(productionMode = false, ui = HelloWorldUI.class, widgetset = "org.vaadin.vwscdn.sample.AppWidgetSet")
+    @VaadinServletConfiguration(productionMode = false, ui = HelloWorldUI.class)
     public static class Servlet extends VaadinServlet {
 
         @Override
@@ -39,8 +39,12 @@ public class HelloWorldUI extends UI {
             WidgetSetCDNClient c = new WidgetSetCDNClient(getService());
 
             //TODO: Here this is just hand crafted. Automate. Externalize.
-            c.initRemoteWidgetset("7.3.4", new WidgetInfo(TextField.class),
-                    new WidgetInfo(Label.class), new WidgetInfo("addon:Vaadin Charts", "1.1.7"));
+            WidgetSetInfo ws = new WidgetSetInfo("7.3.4")
+                    .eager(new WidgetInfo(TextField.class))
+                    .eager(new WidgetInfo(Label.class))
+                    .add(new WidgetInfo("addon:Vaadin Charts", "1.1.7"));
+
+            c.useRemoteWidgetset(ws);
         }
 
     }

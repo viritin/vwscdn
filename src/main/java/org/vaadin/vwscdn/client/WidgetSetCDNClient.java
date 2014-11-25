@@ -46,10 +46,10 @@ public class WidgetSetCDNClient {
 
     }
 
-    public void initRemoteWidgetset(String vaadinVersion, WidgetInfo... componentInfo) {
+    public void useRemoteWidgetset(WidgetSetInfo info) {
 
         // Get remote widgetset
-        RemoteWidgetSet ws = getRemoteWidgetSet(createWidgetSetInfo(vaadinVersion, componentInfo));
+        RemoteWidgetSet ws = getRemoteWidgetSet(info);
 
         // Rewrite the bootstrap            
         service.addSessionInitListener(new WidgetSetCDNClient.SessionInitListener(ws));
@@ -62,12 +62,7 @@ public class WidgetSetCDNClient {
                 .post(Entity.json(info), RemoteWidgetSet.class);
     }
 
-    public WidgetSetInfo createWidgetSetInfo(String vaadinVersion, WidgetInfo... componentInfo) {
-        WidgetSetInfo info = new WidgetSetInfo();
-        info.setVaadinVersion(vaadinVersion);
-        info.setEager(Arrays.asList(componentInfo));
-        return info;
-    }
+
 
     /* Session initialization listener to override the javascript to load widgetset */
     public static class SessionInitListener implements com.vaadin.server.SessionInitListener {
