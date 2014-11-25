@@ -15,18 +15,29 @@ public class WidgetInfo {
 
     String fqn;
     String version;
+    boolean lazy;
 
     public WidgetInfo() {
     }
 
     public WidgetInfo(Class<? extends Component> aClass) {
-        fqn = aClass.getCanonicalName();
-        version = null;
+        this(aClass, false);
+    }
+
+    public WidgetInfo(Class<? extends Component> aClass, boolean lazy) {
+        this.fqn = aClass.getCanonicalName();
+        this.version = null;
+        this.lazy = lazy;
     }
 
     public WidgetInfo(String fqn, String version) {
+        this(fqn, version, false);
+    }
+
+    public WidgetInfo(String fqn, String version, boolean lazy) {
         this.fqn = fqn;
         this.version = version;
+        this.lazy = lazy;
     }
 
     public String getFqn() {
