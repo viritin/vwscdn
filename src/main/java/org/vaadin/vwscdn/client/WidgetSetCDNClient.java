@@ -10,7 +10,6 @@ import com.vaadin.server.BootstrapListener;
 import com.vaadin.server.BootstrapPageResponse;
 import com.vaadin.server.SessionInitEvent;
 import com.vaadin.server.VaadinService;
-import java.util.Arrays;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -19,7 +18,6 @@ import javax.ws.rs.core.MediaType;
 import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.vaadin.vwscdn.shared.WidgetInfo;
 import org.vaadin.vwscdn.shared.WidgetSetInfo;
 import org.vaadin.vwscdn.shared.RemoteWidgetSet;
 

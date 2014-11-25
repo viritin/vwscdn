@@ -36,14 +36,13 @@ public class HelloWorldUI extends UI {
         protected void servletInitialized() throws ServletException {
             super.servletInitialized();
 
-            WidgetSetCDNClient c = new WidgetSetCDNClient(getService());
-
             //TODO: Here this is just hand crafted. Automate. Externalize.
             WidgetSetInfo ws = new WidgetSetInfo("7.3.4")
                     .eager(new WidgetInfo(TextField.class))
                     .eager(new WidgetInfo(Label.class))
-                    .add(new WidgetInfo("addon:Vaadin Charts", "1.1.7"));
+                    .lazy(new WidgetInfo("addon:Vaadin Charts", "1.1.7"));
 
+            WidgetSetCDNClient c = new WidgetSetCDNClient(getService());
             c.useRemoteWidgetset(ws);
         }
 
