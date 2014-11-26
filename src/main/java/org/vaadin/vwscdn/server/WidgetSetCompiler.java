@@ -18,6 +18,13 @@ import java.util.logging.Logger;
 
 public class WidgetSetCompiler {
 
+    static void printArguments(List<String> argsStr) {
+        for (String arg : argsStr) {
+            System.out.print(arg + " ");
+        }
+        System.out.println("");
+    }
+
     private String wsName;
     private File targetDir;
     private File tempDir;
@@ -73,7 +80,7 @@ public class WidgetSetCompiler {
         }
 
         args.add("-classpath");
-        args.add(getClassPathArg());
+        args.add(getClassPathArg(this.classpathEntries));
 
         String compilerClass = "com.google.gwt.dev.Compiler";
         args.add(compilerClass);
@@ -94,10 +101,7 @@ public class WidgetSetCompiler {
 
         final String[] argsStr = new String[args.size()];
         args.toArray(argsStr);
-        for (String arg : argsStr) {
-            System.out.print(arg + " ");
-        }
-        System.out.println("");
+        printArguments(args);
 
         calcelCompilation = false;
         compilerProcess = new ProcessBuilder(argsStr).start();
@@ -143,7 +147,7 @@ public class WidgetSetCompiler {
         }
     }
 
-    private String getClassPathArg() {
+    public static String getClassPathArg(List<File> classpathEntries) {
         StringBuilder classpath = new StringBuilder();
         for (File classpathEntry : classpathEntries) {
             classpath.append(classpathEntry).append(File.pathSeparator);

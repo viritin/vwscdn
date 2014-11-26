@@ -42,6 +42,9 @@ public class WidgetSetServlet extends HttpServlet {
             fileInputStream = new FileInputStream(wsFile);
             responseOutputStream = response.getOutputStream();
             int bytes;
+            
+            Logger.getLogger(WidgetSetServlet.class.getName()).log(Level.INFO, "{1}: Loading widgetset ''{0}''", new String[]{wsName, request.getRemoteAddr()});
+
             while ((bytes = fileInputStream.read()) != -1) {
                 responseOutputStream.write(bytes);
             }

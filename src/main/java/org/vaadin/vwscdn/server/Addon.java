@@ -1,6 +1,7 @@
 package org.vaadin.vwscdn.server;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -16,6 +17,24 @@ import java.util.logging.Logger;
  * @author se
  */
 public class Addon {
+
+    public static List getAllAddonWidgetSets(File dir) {
+        List<Addon> addons = new ArrayList<Addon>();
+        File[] jars = dir.listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".jar");
+            }
+        });
+        for (File jar : jars) {
+            Addon addon = Addon.readFrom(jar);
+            if (addon != null) {
+                addons.add(addon);
+                Logger.getLogger(WSCompilerService.class.getName()).log(Level.INFO, "Found " + addon.name + " (" + addon.version + ")");
+            }
+        }
+        Logger.getLogger(WSCompilerService.class.getName()).log(Level.INFO, "Found total " + addons.size() + " addons ");
+        return addons;
+    }
     final String name;
     final String version;
     private final File jarFile;
@@ -124,6 +143,15 @@ public class Addon {
             }
         } catch (Exception e) {
             Logger.getLogger(WSCompilerService.class.getName()).log(Level.WARNING, "Failed to include jar", e);
+        }
+        return null;
+    }
+
+    public static Addon findAddon(String name, String version, List<Addon> allAddons) {
+        for (Addon a : allAddons) {
+            if (a.getName().equals(name) && a.getVersion().equals(version)) {
+                return a;
+            }
         }
         return null;
     }

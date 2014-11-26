@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -52,21 +54,21 @@ public class WSCompilerService {
     private static final String CONNECTOR_LOADER_TEMPLATE = "OptimizedConnectorBundleLoaderFactory.txt";
     private static final String CONNECTOR_LOADER_CLASSNAME = "OptimizedConnectorBundleLoaderFactory";
     private static final String EAGER_CONNECTORS_PLACEHOLDER = "[EAGER_CONNECTORS]";
-    private static final String EAGER_CONNECTOR_TEMPLATE = "eagerConnectors.add([CLASSNAME]);\n";
+    private static final String EAGER_CONNECTOR_TEMPLATE = "eagerConnectors.add([CLASSNAME].class.getName());\n            ";
     private static final String EAGER_CLASSNAME_PLACEHOLDER = "[CLASSNAME]";
-    
+
     public WSCompilerService() {
     }
-    
+
     private static final String NA = "error";
-    
+
     @Produces("text/plain")
     @GET
     @Path("/ping")
     public String test() {
         return "Reply at " + new Date();
     }
-    
+
     @Produces("application/json")
     @POST
     @Path("/compile")
@@ -98,9 +100,10 @@ public class WSCompilerService {
         // This should never happen
         return new RemoteWidgetSet();
     }
-    
+
     private String buildId(WidgetSetInfo info) {
         StringBuilder hash = new StringBuilder();
+        hash.append(info.getVaadinVersion());
         for (WidgetInfo ci : info.getEager()) {
             String fqn = ci.getFqn();
             hash.append(fqn);
@@ -111,15 +114,15 @@ public class WSCompilerService {
         }
         return calculateMD5(hash.toString());
     }
-    
+
     private static String calculateMD5(String string) {
         try {
             byte[] bytesOfMessage = string.getBytes("UTF-8");
             MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] thedigest = md.digest(bytesOfMessage);
-            
+
             StringBuilder hexString = new StringBuilder();
-            
+
             for (int i = 0; i < thedigest.length; i++) {
                 String hex = Integer.toHexString(0xFF & thedigest[i]);
                 if (hex.length() == 1) {
@@ -132,15 +135,15 @@ public class WSCompilerService {
             throw new RuntimeException("MD5 failed", e);
         }
     }
-    
+
     private String findPreCompiledWidgetset(String id) {
         String wsName = "ws" + id;
         File wsFile = new File(WidgetSetServlet.PUBLIC_ROOT_DIR, wsName);
         return (wsFile.exists() && wsFile.canRead()) ? wsName : null;
     }
-    
+
     private String gwtCompile(String id, WidgetSetInfo info) {
-        
+
         String wsName = "ws" + id;
 
         // Generate classpath
@@ -150,24 +153,27 @@ public class WSCompilerService {
 
         // Intialize if not yet initialized
         if (allAddons == null) {
-            allAddons = getAllAddonWidgetSets(ADDON_JAR_DIR);
+            allAddons = Addon.getAllAddonWidgetSets(ADDON_JAR_DIR);
         }
 
         // Generate widgetset file
         Set<String> wss = new HashSet<>();
 
-        // Process all requested addons
+        // Process all requested addons for widgetset include.
         // TODO: We sound really index all the classes in addons and build an
         // index based on that. Now we just use the jar name
+        ArrayList<WidgetInfo> requestedWidgets = new ArrayList<>();
+        requestedWidgets.addAll(info.getEager());
+        requestedWidgets.addAll(info.getLazy());
         List<Addon> includedAddons = new ArrayList<>();
-        for (WidgetInfo ci : info.getEager()) {
+        for (WidgetInfo ci : requestedWidgets) {
             if (ci.getFqn().startsWith("addon:")) {
-                Addon match = findAddon(ci.getFqn().substring(6), ci.getVersion(), allAddons);
+                Addon match = Addon.findAddon(ci.getFqn().substring(6), ci.getVersion(), allAddons);
                 if (match != null) {
                     includedAddons.add(match);
                 } else {
                     Logger.getLogger(WSCompilerService.class.getName()).log(Level.WARNING, "Addon not found " + ci.getFqn().substring(6));
-                    
+
                 }
             }
         }
@@ -179,7 +185,9 @@ public class WSCompilerService {
 
         // Generate WidgetSetInfo XML
         try {
-            generateConnectorBundleLoaderFactory(GEN_SRC_DIR, info.getEager());
+            File javaFile = generateConnectorBundleLoaderFactory(GEN_SRC_DIR, info.getEager());
+            int res = compileJava(javaFile, cp);
+            assert res == 0;
             generateGwtXml(GEN_SRC_DIR, wsName, wss);
         } catch (IOException ex) {
             Logger.getLogger(WSCompilerService.class.getName()).log(Level.SEVERE, null, ex);
@@ -188,7 +196,7 @@ public class WSCompilerService {
 
         // Run the compiler
         WidgetSetCompiler compiler = new WidgetSetCompiler(wsName, WidgetSetServlet.PUBLIC_ROOT_DIR, TMP_DIR, cp);
-        
+
         try {
             compiler.compileWidgetset();
             return wsName;
@@ -197,8 +205,10 @@ public class WSCompilerService {
         }
         return null;
     }
-    
-    private void generateConnectorBundleLoaderFactory(File srcDir, List<WidgetInfo> eagerWidgets) {
+
+    private File generateConnectorBundleLoaderFactory(File srcDir, List<WidgetInfo> eagerWidgets) {
+        // Return file
+        File javaFile = new File(srcDir, CONNECTOR_LOADER_CLASSNAME + ".java");
 
         // Fill the template for eager connectors
         StringBuilder eagerStr = new StringBuilder();
@@ -208,8 +218,8 @@ public class WSCompilerService {
 
         // Copy file and add/replace eager connectors
         try {
-            BufferedReader r = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/"+CONNECTOR_LOADER_TEMPLATE)));
-            PrintStream w = new PrintStream(new File(srcDir, CONNECTOR_LOADER_CLASSNAME + ".java"));
+            BufferedReader r = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/" + CONNECTOR_LOADER_TEMPLATE)));
+            PrintStream w = new PrintStream(javaFile);
             String l = null;
             while ((l = r.readLine()) != null) {
                 w.print(l.replace(EAGER_CONNECTORS_PLACEHOLDER, eagerStr));
@@ -220,16 +230,18 @@ public class WSCompilerService {
         } catch (IOException ex) {
             Logger.getLogger(WSCompilerService.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return javaFile;
+
     }
-    
+
     private void generateGwtXml(File widgetsetDir, String wsName,
             Set<String> includeWs) throws IOException {
-        
+
         File widgetsetFile = new File(widgetsetDir, wsName + ".gwt.xml");
         if (!widgetsetFile.exists() && !widgetsetFile.createNewFile()) {
             throw new IOException("Could not create file " + widgetsetFile);
         }
-        
+
         try (PrintStream printStream = new PrintStream(new FileOutputStream(
                 widgetsetFile))) {
             printStream.print("<!DOCTYPE module PUBLIC \"-//Google Inc.//"
@@ -240,7 +252,7 @@ public class WSCompilerService {
             for (String ws : includeWs) {
                 printStream.print("<inherits name=\"" + ws + "\" />\n");
             }
-            printStream.print("<generate-with class=\"" 
+            printStream.print("<generate-with class=\""
                     + CONNECTOR_LOADER_CLASSNAME
                     + "\">\n"
                     + "<when-type-assignable class=\"com.vaadin.client.metadata.ConnectorBundleLoader\" />\n"
@@ -248,7 +260,7 @@ public class WSCompilerService {
             printStream.print("\n</module>\n");
         }
     }
-    
+
     private Set<String> getIncludeWidgetsets(List<Addon> includeAddons) {
         Set<String> widgetsets = new HashSet<String>();
         if (includeAddons != null) {
@@ -259,7 +271,7 @@ public class WSCompilerService {
         widgetsets.add("com.vaadin.DefaultWidgetSet");
         return widgetsets;
     }
-    
+
     public static List<File> getCoreJars(File vaadinCoreDir) {
         File[] jars = vaadinCoreDir.listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
@@ -268,32 +280,26 @@ public class WSCompilerService {
         });
         return Arrays.asList(jars);
     }
-    
-    public static List<Addon> getAllAddonWidgetSets(File dir) {
-        List<Addon> addons = new ArrayList<Addon>();
-        File[] jars = dir.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".jar");
-            }
-        });
-        for (File jar : jars) {
-            Addon addon = Addon.readFrom(jar);
-            if (addon != null) {
-                addons.add(addon);
-                Logger.getLogger(WSCompilerService.class.getName()).log(Level.INFO, "Found " + addon.name + " (" + addon.version + ")");
-            }
+
+
+    private static int compileJava(File fileToCompile, List<File> cp) {
+        int compilationResult = -1;
+        try {
+            JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+            new File("target/out2").mkdir();
+            System.out.println(compiler.getClass().getName());
+            List<String> options = new ArrayList<String>();
+            options.add("-classpath");
+            options.add(WidgetSetCompiler.getClassPathArg(cp));
+            options.add("-s");
+            options.add(fileToCompile.getParent());
+            options.add(fileToCompile.getCanonicalPath());
+            WidgetSetCompiler.printArguments(options);
+            compilationResult = compiler.run(null, null, null, options.toArray(new String[options.size()]));
+        } catch (IOException ex) {
+            Logger.getLogger(WSCompilerService.class.getName()).log(Level.SEVERE, null, ex);
         }
-        Logger.getLogger(WSCompilerService.class.getName()).log(Level.INFO, "Found total " + addons.size() + " addons ");
-        return addons;
+        return compilationResult;
     }
-    
-    private Addon findAddon(String name, String version, List<Addon> allAddons) {
-        for (Addon a : allAddons) {
-            if (a.getName().equals(name) && a.getVersion().equals(version)) {
-                return a;
-            }
-        }
-        return null;
-    }
-    
+
 }

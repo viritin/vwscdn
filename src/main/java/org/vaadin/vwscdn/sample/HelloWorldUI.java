@@ -37,7 +37,7 @@ public class HelloWorldUI extends UI {
             super.servletInitialized();
 
             //TODO: Here this is just hand crafted. Automate. Externalize.
-            WidgetSetInfo ws = new WidgetSetInfo("7.3.4")
+            WidgetSetInfo ws = new WidgetSetInfo("7.3.1")
                     .eager(new WidgetInfo(TextField.class))
                     .eager(new WidgetInfo(Label.class))
                     .lazy(new WidgetInfo("addon:Vaadin Charts", "1.1.7"));
