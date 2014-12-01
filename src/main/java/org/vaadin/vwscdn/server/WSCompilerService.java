@@ -73,7 +73,7 @@ public class WSCompilerService {
             try {
                 //Old one: widgetset = WidgetSetCompiler.compileWidgetset(id, info);
                 widgetset = MavenWsCompiler.compileWidgetSet(id, info, COMPILER_ROOT_DIR, WidgetSetServlet.PUBLIC_ROOT_DIR);
-            } catch (MavenInvocationException ex) {
+            } catch (Exception ex) {
                 Logger.getLogger(WSCompilerService.class.getName()).log(Level.SEVERE, null, ex);
                 widgetset = null;
             }

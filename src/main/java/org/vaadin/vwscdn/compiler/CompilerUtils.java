@@ -48,12 +48,12 @@ public class CompilerUtils {
                 PrintStream w = new PrintStream(pomFile)) {
             String l;
             while ((l = r.readLine()) != null) {
-                w.print(l.replace("[WS_ID]", widgetsetId));
-                w.print(l.replace("[VAADIN_VERSION]", info.getVaadinVersion()));
-                w.print(l.replace("[COMPILE_STYLE]", "OBFUSCATED"));
-                w.print(l.replace("[COMPILE_DRAFT]", "" + false));
-                w.print(l.replace("<!-- ADDON_DEPS -->", addonDeps));
-                w.print("\n");
+                l = l.replace("[WS_ID]", widgetsetId);
+                l = l.replace("[VAADIN_VERSION]", info.getVaadinVersion());
+                l = l.replace("[COMPILE_STYLE]", "OBFUSCATED");
+                l = l.replace("[COMPILE_DRAFT]", "" + false);
+                l = l.replace("<!-- ADDON_DEPS -->", addonDeps);
+                w.print(l+"\n");
             }
         }
     }

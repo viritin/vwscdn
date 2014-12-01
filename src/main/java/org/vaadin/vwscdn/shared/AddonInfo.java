@@ -1,11 +1,16 @@
 package org.vaadin.vwscdn.shared;
 
+import javax.xml.bind.annotation.XmlTransient;
+
 public class AddonInfo {
 
     private String groupId;
     private String artifactId;
     private String version;
 
+    public AddonInfo() {    
+    }
+    
     public AddonInfo(String groupId, String artifactId, String version) {
         this.groupId = groupId;
         this.artifactId = artifactId;
@@ -36,23 +41,21 @@ public class AddonInfo {
         this.version = version;
     }
 
+    @XmlTransient
     public String getFullMavenId() {
         return groupId + "." + artifactId + "-" + version;
     }
 
+    @XmlTransient
     public String getMavenPomSnippet() {
         StringBuilder b = new StringBuilder();
-        b.append("<dependency>");
-        b.append("    <groupId>");
+        b.append("<dependency><groupId>");
         b.append(getGroupId());
-        b.append("</groupId>");
-        b.append("    <artifactId>");
+        b.append("</groupId><artifactId>");
         b.append(getArtifactId());
-        b.append("</artifactId>");
-        b.append("    <version>");
+        b.append("</artifactId><version>");
         b.append(getVersion());
-        b.append("</version>");
-        b.append("</dependency>");
+        b.append("</version></dependency>");
         return b.toString();
     }
 }
