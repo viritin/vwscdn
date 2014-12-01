@@ -27,6 +27,7 @@ import javax.ws.rs.Produces;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.vaadin.vwscdn.compiler.MavenWsCompiler;
 import org.vaadin.vwscdn.compiler.WidgetSetCompiler;
+import org.vaadin.vwscdn.shared.AddonInfo;
 import org.vaadin.vwscdn.shared.RemoteWidgetSet;
 
 /**
@@ -94,8 +95,8 @@ public class WSCompilerService {
     private String buildId(WidgetSetInfo info) {
         StringBuilder hash = new StringBuilder();
         hash.append(info.getVaadinVersion());
-        for (WidgetInfo ci : info.getEager()) {
-            String fqn = ci.getFqn();
+        for (AddonInfo ci : info.getAddons()) {
+            String fqn = ci.getFullMavenId();
             hash.append(fqn);
             String v = ci.getVersion();
             if (v != null) {
