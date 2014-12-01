@@ -33,9 +33,9 @@ public class MavenWsCompiler {
 
     public static String compileWidgetSet(String id, WidgetSetInfo info, File workDir, File toDir) throws MavenInvocationException, IOException {
         MavenWsCompiler compiler = new MavenWsCompiler(workDir,
-                id, info);
+                "ws"+id, info);
         compiler.compile();
-        return id;
+        return "ws"+id;
     }
 
     public MavenWsCompiler(File baseDir, String widgetSetId, WidgetSetInfo wsInfo) {
