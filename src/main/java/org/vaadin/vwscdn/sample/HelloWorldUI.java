@@ -19,6 +19,8 @@ import org.vaadin.vwscdn.shared.WidgetInfo;
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.ChartType;
 import com.vaadin.addon.charts.model.DataSeries;
+import org.vaadin.addons.idle.Idle;
+import org.vaadin.virkki.paperstack.PaperStack;
 import org.vaadin.vwscdn.shared.AddonInfo;
 import org.vaadin.vwscdn.shared.WidgetSetInfo;
 
@@ -38,10 +40,12 @@ public class HelloWorldUI extends UI {
             super.servletInitialized();
 
             //TODO: Here this is just hand crafted. Automate. Externalize.
-            WidgetSetInfo ws = new WidgetSetInfo("7.3.5")
+            WidgetSetInfo ws = new WidgetSetInfo("7.3.4")
                     .eager(new WidgetInfo(TextField.class))
                     .eager(new WidgetInfo(Label.class))
-                    .addon(new AddonInfo("com.vaadin.addon", "vaadin-charts", "1.1.7"));
+                    .addon(new AddonInfo("com.vaadin.addon", "vaadin-charts", "1.1.7"))
+                    .addon(new AddonInfo("org.vaadin.virkki", "paperstack", "2.0.0"))
+                    .addon(new AddonInfo("org.vaadin.addon", "idle", "1.0.1"));
 
             WidgetSetCDNClient c = new WidgetSetCDNClient(getService());
             c.useRemoteWidgetset(ws);
@@ -56,6 +60,17 @@ public class HelloWorldUI extends UI {
         layout.setSpacing(true);
         setContent(layout);
 
+        Idle.track(this, 1000, new Idle.Listener() {
+
+            @Override
+            public void userInactive() {
+                Notification.show("INACT");
+            }
+
+            @Override
+            public void userActive() {
+            }
+        });
         layout.addComponent(new Label("Hello World!"));
         layout.addComponent(new Label("Greetings from server."));
         layout.addComponent(new Label("I have "
@@ -75,11 +90,13 @@ public class HelloWorldUI extends UI {
 
             }
         });
-
-        layout.addComponent(button);
+        PaperStack stack = new PaperStack();
+        layout.addComponent(stack);
+        
+        stack.addComponent(button);
         Chart chart = new Chart(ChartType.PIE);
         chart.getConfiguration().addSeries(new DataSeries(new String[]{"A", "B"}, new Number[]{1, 2, 3, 4}));
-        layout.addComponent(chart);
+        stack.addComponent(chart);
         layout.addComponent(clickCounterLabel = new Label("Clicks: 0"));
     }
 
