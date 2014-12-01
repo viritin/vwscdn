@@ -7,16 +7,33 @@ package org.vaadin.vwscdn.compiler;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
+import org.vaadin.vwscdn.server.WSCompilerService;
+import static org.vaadin.vwscdn.server.WSCompilerService.COMPILER_ROOT_DIR;
+import org.vaadin.vwscdn.server.WidgetSetServlet;
+import org.vaadin.vwscdn.shared.AddonInfo;
+import org.vaadin.vwscdn.shared.WidgetSetInfo;
 
 public class WidgetSetCompiler {
+
+    private static final File GEN_SRC_DIR = new File(COMPILER_ROOT_DIR, "tmp-src");
+    private static final File TMP_DIR = new File(COMPILER_ROOT_DIR, "tmp");
+    private static final File VAADIN_JAR_DIR = new File(COMPILER_ROOT_DIR, "vaadin");
+    private static final File ADDON_JAR_DIR = new File(COMPILER_ROOT_DIR, "addons");
+    private static List<Addon> allAddons;
 
     public static void printArguments(List<String> argsStr) {
         for (String arg : argsStr) {
@@ -183,5 +200,72 @@ public class WidgetSetCompiler {
         }
 
         return "java";
+    }
+
+    public static String compileWidgetset(String id, WidgetSetInfo info) {
+
+        String wsName = "ws" + id;
+
+        // Generate classpath
+        List<File> cp = new ArrayList<File>();
+        cp.addAll(getCoreJars(new File(VAADIN_JAR_DIR, info.getVaadinVersion())));
+        cp.add(GEN_SRC_DIR);
+
+        // Intialize if not yet initialized
+        if (allAddons == null) {
+            allAddons = Addon.getAllAddonWidgetSets(ADDON_JAR_DIR);
+        }
+
+        // Generate widgetset file
+        Set<String> wss = new HashSet<>();
+
+        // Process all requested addons for widgetset include.
+        // TODO: We sound really index all the classes in addons and build an
+        // index based on that. Now we just use the jar name
+        List<Addon> includedAddons = new ArrayList<>();
+        for (AddonInfo ci : info.getAddons()) {
+            // TODO: NOT WORKING ANYMORE: Addon match = Addon.findAddon(ci.getFqn().substring(6), ci.getVersion(), allAddons);
+            //if (match != null) {
+            //    includedAddons.add(match);
+            //} else {
+            Logger.getLogger(WSCompilerService.class.getName()).log(Level.WARNING, "Addon not found " + ci.getFullMavenId());
+            //}
+        }
+        for (Addon addon : includedAddons) {
+            cp.add(addon.getJarFile());
+            wss.addAll(addon.getWidgetsets());
+        }
+        wss.add("com.vaadin.DefaultWidgetSet");
+
+        // Generate WidgetSetInfo XML
+        try {
+            File javaFile = CompilerUtils.generateConnectorBundleLoaderFactory(GEN_SRC_DIR, info.getEager());
+            int res = CompilerUtils.compileJava(javaFile, cp);
+            assert res == 0;
+            CompilerUtils.generateGwtXml(GEN_SRC_DIR, wsName, wss);
+        } catch (IOException ex) {
+            Logger.getLogger(WSCompilerService.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+
+        // Run the compiler
+        WidgetSetCompiler compiler = new WidgetSetCompiler(wsName, WidgetSetServlet.PUBLIC_ROOT_DIR, TMP_DIR, cp);
+
+        try {
+            compiler.compileWidgetset();
+            return wsName;
+        } catch (Exception ex) {
+            Logger.getLogger(WSCompilerService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    public static List<File> getCoreJars(File vaadinCoreDir) {
+        File[] jars = vaadinCoreDir.listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".jar");
+            }
+        });
+        return Arrays.asList(jars);
     }
 }

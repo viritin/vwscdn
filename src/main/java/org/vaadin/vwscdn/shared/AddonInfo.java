@@ -40,4 +40,19 @@ public class AddonInfo {
         return groupId + "." + artifactId + "-" + version;
     }
 
+    public String getMavenPomSnippet() {
+        StringBuilder b = new StringBuilder();
+        b.append("<dependency>");
+        b.append("    <groupId>");
+        b.append(getGroupId());
+        b.append("</groupId>");
+        b.append("    <artifactId>");
+        b.append(getArtifactId());
+        b.append("</artifactId>");
+        b.append("    <version>");
+        b.append(getVersion());
+        b.append("</version>");
+        b.append("</dependency>");
+        return b.toString();
+    }
 }

@@ -5,19 +5,12 @@
  */
 package org.vaadin.vwscdn.server;
 
-import org.vaadin.vwscdn.compiler.WidgetSetCompiler;
 import org.vaadin.vwscdn.compiler.Addon;
-import java.io.BufferedReader;
 import org.vaadin.vwscdn.shared.WidgetSetInfo;
 import org.vaadin.vwscdn.shared.WidgetInfo;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.security.MessageDigest;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -25,15 +18,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.tools.JavaCompiler;
-import javax.tools.ToolProvider;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
 import javax.ws.rs.Produces;
-import org.vaadin.vwscdn.shared.AddonInfo;
+import org.apache.maven.shared.invoker.MavenInvocationException;
+import org.vaadin.vwscdn.compiler.MavenWsCompiler;
+import org.vaadin.vwscdn.compiler.WidgetSetCompiler;
 import org.vaadin.vwscdn.shared.RemoteWidgetSet;
 
 /**
@@ -45,20 +38,8 @@ import org.vaadin.vwscdn.shared.RemoteWidgetSet;
 public class WSCompilerService {
 
     //TODO: make this dynamic
-    private final String publicWidgetSetBaseURL = "http://localhost:8080/vaadin-wscdn-1.0-SNAPSHOT/ws/";
-
-    //TODO: make this dynamic
-    private final File COMPILER_ROOT_DIR = new File("/Users/se/ws/compiler");
-    private final File GEN_SRC_DIR = new File(COMPILER_ROOT_DIR, "tmp-src");
-    private final File TMP_DIR = new File(COMPILER_ROOT_DIR, "tmp");
-    private final File VAADIN_JAR_DIR = new File(COMPILER_ROOT_DIR, "vaadin");
-    private final File ADDON_JAR_DIR = new File(COMPILER_ROOT_DIR, "addons");
-    private List<Addon> allAddons;
-    private static final String CONNECTOR_LOADER_TEMPLATE = "OptimizedConnectorBundleLoaderFactory.txt";
-    private static final String CONNECTOR_LOADER_CLASSNAME = "OptimizedConnectorBundleLoaderFactory";
-    private static final String EAGER_CONNECTORS_PLACEHOLDER = "[EAGER_CONNECTORS]";
-    private static final String EAGER_CONNECTOR_TEMPLATE = "eagerConnectors.add([CLASSNAME].class.getName());\n            ";
-    private static final String EAGER_CLASSNAME_PLACEHOLDER = "[CLASSNAME]";
+    public static final String publicWidgetSetBaseURL = "http://localhost:8080/vaadin-wscdn-1.0-SNAPSHOT/ws/";
+    public static final File COMPILER_ROOT_DIR = new File("/Users/se/ws/compiler");
 
     public WSCompilerService() {
     }
@@ -89,7 +70,13 @@ public class WSCompilerService {
 
         // If not found, compile a new one
         if (widgetset == null) {
-            widgetset = gwtCompile(id, info);
+            try {
+                //Old one: widgetset = WidgetSetCompiler.compileWidgetset(id, info);
+                widgetset = MavenWsCompiler.compileWidgetSet(id, info, COMPILER_ROOT_DIR, WidgetSetServlet.PUBLIC_ROOT_DIR);
+            } catch (MavenInvocationException ex) {
+                Logger.getLogger(WSCompilerService.class.getName()).log(Level.SEVERE, null, ex);
+                widgetset = null;
+            }
         }
 
         // Return a URL to the public widgetset
@@ -143,159 +130,6 @@ public class WSCompilerService {
         String wsName = "ws" + id;
         File wsFile = new File(WidgetSetServlet.PUBLIC_ROOT_DIR, wsName);
         return (wsFile.exists() && wsFile.canRead()) ? wsName : null;
-    }
-
-    private String gwtCompile(String id, WidgetSetInfo info) {
-
-        String wsName = "ws" + id;
-
-        // Generate classpath
-        List<File> cp = new ArrayList<File>();
-        cp.addAll(getCoreJars(new File(VAADIN_JAR_DIR, info.getVaadinVersion())));
-        cp.add(GEN_SRC_DIR);
-
-        // Intialize if not yet initialized
-        if (allAddons == null) {
-            allAddons = Addon.getAllAddonWidgetSets(ADDON_JAR_DIR);
-        }
-
-        // Generate widgetset file
-        Set<String> wss = new HashSet<>();
-
-        // Process all requested addons for widgetset include.
-        // TODO: We sound really index all the classes in addons and build an
-        // index based on that. Now we just use the jar name
-        List<Addon> includedAddons = new ArrayList<>();
-        for (AddonInfo ci : info.getAddons()) {
-            // TODO: NOT WORKING ANYMORE: Addon match = Addon.findAddon(ci.getFqn().substring(6), ci.getVersion(), allAddons);
-            //if (match != null) {
-            //    includedAddons.add(match);
-            //} else {
-                Logger.getLogger(WSCompilerService.class.getName()).log(Level.WARNING, "Addon not found " + ci.getFullMavenId());
-            //}
-        }
-        for (Addon addon : includedAddons) {
-            cp.add(addon.getJarFile());
-            wss.addAll(addon.getWidgetsets());
-        }
-        wss.add("com.vaadin.DefaultWidgetSet");
-
-        // Generate WidgetSetInfo XML
-        try {
-            File javaFile = generateConnectorBundleLoaderFactory(GEN_SRC_DIR, info.getEager());
-            int res = compileJava(javaFile, cp);
-            assert res == 0;
-            generateGwtXml(GEN_SRC_DIR, wsName, wss);
-        } catch (IOException ex) {
-            Logger.getLogger(WSCompilerService.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
-
-        // Run the compiler
-        WidgetSetCompiler compiler = new WidgetSetCompiler(wsName, WidgetSetServlet.PUBLIC_ROOT_DIR, TMP_DIR, cp);
-
-        try {
-            compiler.compileWidgetset();
-            return wsName;
-        } catch (Exception ex) {
-            Logger.getLogger(WSCompilerService.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-    }
-
-    private File generateConnectorBundleLoaderFactory(File srcDir, List<WidgetInfo> eagerWidgets) {
-        // Return file
-        File javaFile = new File(srcDir, CONNECTOR_LOADER_CLASSNAME + ".java");
-
-        // Fill the template for eager connectors
-        StringBuilder eagerStr = new StringBuilder();
-        for (WidgetInfo w : eagerWidgets) {
-            eagerStr.append(EAGER_CONNECTOR_TEMPLATE.replace(EAGER_CLASSNAME_PLACEHOLDER, w.getFqn()));
-        }
-
-        // Copy file and add/replace eager connectors
-        try {
-            BufferedReader r = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/" + CONNECTOR_LOADER_TEMPLATE)));
-            PrintStream w = new PrintStream(javaFile);
-            String l = null;
-            while ((l = r.readLine()) != null) {
-                w.print(l.replace(EAGER_CONNECTORS_PLACEHOLDER, eagerStr));
-                w.print("\n");
-            }
-            w.close();
-            r.close();
-        } catch (IOException ex) {
-            Logger.getLogger(WSCompilerService.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return javaFile;
-
-    }
-
-    private void generateGwtXml(File widgetsetDir, String wsName,
-            Set<String> includeWs) throws IOException {
-
-        File widgetsetFile = new File(widgetsetDir, wsName + ".gwt.xml");
-        if (!widgetsetFile.exists() && !widgetsetFile.createNewFile()) {
-            throw new IOException("Could not create file " + widgetsetFile);
-        }
-
-        try (PrintStream printStream = new PrintStream(new FileOutputStream(
-                widgetsetFile))) {
-            printStream.print("<!DOCTYPE module PUBLIC \"-//Google Inc.//"
-                    + "DTD Google Web Toolkit 2.5.1//EN\" \"http://google-"
-                    + "web-toolkit.googlecode.com/svn/tags/2.5.1/distro-sou"
-                    + "rce/core/src/gwt-module.dtd\">\n");
-            printStream.print("<module>\n");
-            for (String ws : includeWs) {
-                printStream.print("<inherits name=\"" + ws + "\" />\n");
-            }
-            printStream.print("<generate-with class=\""
-                    + CONNECTOR_LOADER_CLASSNAME
-                    + "\">\n"
-                    + "<when-type-assignable class=\"com.vaadin.client.metadata.ConnectorBundleLoader\" />\n"
-                    + "</generate-with>\n");
-            printStream.print("\n</module>\n");
-        }
-    }
-
-    private Set<String> getIncludeWidgetsets(List<Addon> includeAddons) {
-        Set<String> widgetsets = new HashSet<String>();
-        if (includeAddons != null) {
-            for (Addon addon : includeAddons) {
-                widgetsets.addAll(addon.getWidgetsets());
-            }
-        }
-        widgetsets.add("com.vaadin.DefaultWidgetSet");
-        return widgetsets;
-    }
-
-    public static List<File> getCoreJars(File vaadinCoreDir) {
-        File[] jars = vaadinCoreDir.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".jar");
-            }
-        });
-        return Arrays.asList(jars);
-    }
-
-    private static int compileJava(File fileToCompile, List<File> cp) {
-        int compilationResult = -1;
-        try {
-            JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-            new File("target/out2").mkdir();
-            System.out.println(compiler.getClass().getName());
-            List<String> options = new ArrayList<String>();
-            options.add("-classpath");
-            options.add(WidgetSetCompiler.getClassPathArg(cp));
-            options.add("-s");
-            options.add(fileToCompile.getParent());
-            options.add(fileToCompile.getCanonicalPath());
-            WidgetSetCompiler.printArguments(options);
-            compilationResult = compiler.run(null, null, null, options.toArray(new String[options.size()]));
-        } catch (IOException ex) {
-            Logger.getLogger(WSCompilerService.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return compilationResult;
     }
 
 }
