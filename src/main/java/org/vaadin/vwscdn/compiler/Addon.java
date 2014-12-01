@@ -1,4 +1,4 @@
-package org.vaadin.vwscdn.server;
+package org.vaadin.vwscdn.compiler;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -11,6 +11,7 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.vaadin.vwscdn.server.WSCompilerService;
 
 /**
  *

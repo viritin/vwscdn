@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.vaadin.vwscdn.server;
+package org.vaadin.vwscdn.compiler;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 
 public class WidgetSetCompiler {
 
-    static void printArguments(List<String> argsStr) {
+    public static void printArguments(List<String> argsStr) {
         for (String arg : argsStr) {
             System.out.print(arg + " ");
         }

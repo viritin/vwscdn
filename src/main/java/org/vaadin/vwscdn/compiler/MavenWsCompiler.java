@@ -3,17 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.vaadin.vwscdn.server;
+package org.vaadin.vwscdn.compiler;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.vaadin.vwscdn.shared.WidgetSetInfo;
 
 public class MavenWsCompiler {
@@ -37,24 +33,26 @@ public class MavenWsCompiler {
         src.mkdir();
         pomFile = new File(src, "pom.xml");
         pomFile.createNewFile();
-        copyPomFile(pomTemplate, pomFile, widgetSetId, widgetSetInfo.getVaadinVersion());
+        copyPomFile(pomTemplate, pomFile, widgetSetId, widgetSetInfo);
     }
 
-    private static void copyPomFile(File templatePom, File pomFile, String widgetsetId, String vaadinVersion) throws IOException {
-        BufferedReader r = new BufferedReader(new FileReader(templatePom));
-        PrintStream w = new PrintStream(pomFile);
-        try {
-            String l = null;
+    private static void copyPomFile(File templatePom, File pomFile, String widgetsetId, WidgetSetInfo info) throws IOException {
+
+        StringBuilder addonDeps = new StringBuilder();
+        for (AddonInfo a: info.getAddOns())
+        
+
+        try (BufferedReader r = new BufferedReader(new FileReader(templatePom));
+                PrintStream w = new PrintStream(pomFile)) {
+            String l;
             while ((l = r.readLine()) != null) {
                 w.print(l.replace("[WS_ID]", widgetsetId));
-                w.print(l.replace("[VAADIN_VERSION]", vaadinVersion));
+                w.print(l.replace("[VAADIN_VERSION]", info.getVaadinVersion()));
                 w.print(l.replace("[COMPILE_STYLE]", "OBFUSCATED"));
                 w.print(l.replace("[COMPILE_DRAFT]", "" + false));
+                w.print(l.replace("<!-- ADDON_DEPS -->", addonDeps));
                 w.print("\n");
             }
-        } finally {
-            w.close();
-            r.close();
         }
     }
 

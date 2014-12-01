@@ -5,6 +5,8 @@
  */
 package org.vaadin.vwscdn.server;
 
+import org.vaadin.vwscdn.compiler.WidgetSetCompiler;
+import org.vaadin.vwscdn.compiler.Addon;
 import java.io.BufferedReader;
 import org.vaadin.vwscdn.shared.WidgetSetInfo;
 import org.vaadin.vwscdn.shared.WidgetInfo;
@@ -31,6 +33,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
 import javax.ws.rs.Produces;
+import org.vaadin.vwscdn.shared.AddonInfo;
 import org.vaadin.vwscdn.shared.RemoteWidgetSet;
 
 /**
@@ -162,20 +165,14 @@ public class WSCompilerService {
         // Process all requested addons for widgetset include.
         // TODO: We sound really index all the classes in addons and build an
         // index based on that. Now we just use the jar name
-        ArrayList<WidgetInfo> requestedWidgets = new ArrayList<>();
-        requestedWidgets.addAll(info.getEager());
-        requestedWidgets.addAll(info.getLazy());
         List<Addon> includedAddons = new ArrayList<>();
-        for (WidgetInfo ci : requestedWidgets) {
-            if (ci.getFqn().startsWith("addon:")) {
-                Addon match = Addon.findAddon(ci.getFqn().substring(6), ci.getVersion(), allAddons);
-                if (match != null) {
-                    includedAddons.add(match);
-                } else {
-                    Logger.getLogger(WSCompilerService.class.getName()).log(Level.WARNING, "Addon not found " + ci.getFqn().substring(6));
-
-                }
-            }
+        for (AddonInfo ci : info.getAddons()) {
+            // TODO: NOT WORKING ANYMORE: Addon match = Addon.findAddon(ci.getFqn().substring(6), ci.getVersion(), allAddons);
+            //if (match != null) {
+            //    includedAddons.add(match);
+            //} else {
+                Logger.getLogger(WSCompilerService.class.getName()).log(Level.WARNING, "Addon not found " + ci.getFullMavenId());
+            //}
         }
         for (Addon addon : includedAddons) {
             cp.add(addon.getJarFile());
@@ -280,7 +277,6 @@ public class WSCompilerService {
         });
         return Arrays.asList(jars);
     }
-
 
     private static int compileJava(File fileToCompile, List<File> cp) {
         int compilationResult = -1;

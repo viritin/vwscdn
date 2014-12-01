@@ -19,6 +19,7 @@ import org.vaadin.vwscdn.shared.WidgetInfo;
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.ChartType;
 import com.vaadin.addon.charts.model.DataSeries;
+import org.vaadin.vwscdn.shared.AddonInfo;
 import org.vaadin.vwscdn.shared.WidgetSetInfo;
 
 @Theme("valo")
@@ -37,10 +38,10 @@ public class HelloWorldUI extends UI {
             super.servletInitialized();
 
             //TODO: Here this is just hand crafted. Automate. Externalize.
-            WidgetSetInfo ws = new WidgetSetInfo("7.3.1")
+            WidgetSetInfo ws = new WidgetSetInfo("7.3.5")
                     .eager(new WidgetInfo(TextField.class))
                     .eager(new WidgetInfo(Label.class))
-                    .lazy(new WidgetInfo("addon:Vaadin Charts", "1.1.7"));
+                    .addon(new AddonInfo("com.vaadin.addon", "vaadin-charts", "1.1.7"));
 
             WidgetSetCDNClient c = new WidgetSetCDNClient(getService());
             c.useRemoteWidgetset(ws);
