@@ -14,7 +14,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import javax.servlet.ServletException;
-import org.vaadin.vwscdn.client.WidgetSetCDNClient;
+import org.vaadin.vwscdn.client.VWSCDN;
 import org.vaadin.vwscdn.shared.WidgetInfo;
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.ChartType;
@@ -47,8 +47,9 @@ public class HelloWorldUI extends UI {
                     .addon(new AddonInfo("org.vaadin.virkki", "paperstack", "2.0.0"))
                     .addon(new AddonInfo("org.vaadin.addon", "idle", "1.0.1"));
 
-            WidgetSetCDNClient c = new WidgetSetCDNClient(getService());
-            c.useRemoteWidgetset(ws);
+            // Intialize the widgetset. This might take a while at first run.
+            VWSCDN remote = new VWSCDN(getService());
+            remote.useRemoteWidgetset(ws);
         }
 
     }

@@ -21,11 +21,8 @@ import org.jsoup.nodes.Element;
 import org.vaadin.vwscdn.shared.WidgetSetInfo;
 import org.vaadin.vwscdn.shared.RemoteWidgetSet;
 
-/**
- *
- * @author se
- */
-public class WidgetSetCDNClient {
+
+public class VWSCDN {
 
     private static final String DEFAULT_WIDGETSET_CDN_URL = "http://localhost:8080/vaadin-wscdn-1.0-SNAPSHOT/vwscdn/compile";
 
@@ -33,11 +30,11 @@ public class WidgetSetCDNClient {
     private WebTarget target;
     private final VaadinService service;
 
-    public WidgetSetCDNClient(VaadinService service) {
+    public VWSCDN(VaadinService service) {
         this(service, DEFAULT_WIDGETSET_CDN_URL);
     }
 
-    public WidgetSetCDNClient(VaadinService service, String vwscdnUrl) {
+    public VWSCDN(VaadinService service, String vwscdnUrl) {
         this.client = ClientBuilder.newClient();
         this.target = client.target(vwscdnUrl);
         this.service = service;
@@ -50,7 +47,7 @@ public class WidgetSetCDNClient {
         RemoteWidgetSet ws = getRemoteWidgetSet(info);
 
         // Rewrite the bootstrap            
-        service.addSessionInitListener(new WidgetSetCDNClient.SessionInitListener(ws));
+        service.addSessionInitListener(new VWSCDN.SessionInitListener(ws));
 
     }
 

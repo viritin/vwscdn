@@ -84,6 +84,7 @@
                 </configuration>
                 <executions>
                     <execution>
+                        <phase>process-classes</phase>
                         <goals>
                             <goal>update-widgetset</goal>
                             <goal>compile</goal>

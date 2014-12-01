@@ -5,17 +5,10 @@
  */
 package org.vaadin.vwscdn.server;
 
-import org.vaadin.vwscdn.compiler.Addon;
 import org.vaadin.vwscdn.shared.WidgetSetInfo;
-import org.vaadin.vwscdn.shared.WidgetInfo;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.security.MessageDigest;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
@@ -24,9 +17,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
 import javax.ws.rs.Produces;
-import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.vaadin.vwscdn.compiler.MavenWsCompiler;
-import org.vaadin.vwscdn.compiler.WidgetSetCompiler;
 import org.vaadin.vwscdn.shared.AddonInfo;
 import org.vaadin.vwscdn.shared.RemoteWidgetSet;
 
@@ -89,7 +80,9 @@ public class WSCompilerService {
         }
 
         // This should never happen
-        return new RemoteWidgetSet();
+        RemoteWidgetSet res = new RemoteWidgetSet();
+        res.setWidgetSetName("Failed to compile widgetset '"+ widgetset+"'");
+        return res;
     }
 
     private String buildId(WidgetSetInfo info) {

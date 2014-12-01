@@ -3,18 +3,13 @@ package org.vaadin.vwscdn.compiler;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.tools.JavaCompiler;
-import javax.tools.ToolProvider;
 import org.vaadin.vwscdn.server.WSCompilerService;
 import org.vaadin.vwscdn.shared.AddonInfo;
 import org.vaadin.vwscdn.shared.WidgetInfo;
@@ -32,7 +27,7 @@ public class CompilerUtils {
     private static final String EAGER_CONNECTOR_TEMPLATE = "eagerConnectors.add([CLASSNAME].class.getName());\n            ";
     private static final String EAGER_CLASSNAME_PLACEHOLDER = "[CLASSNAME]";
 
-    private static String POM_TEMPLATE_RESOURCE = "/pom-template.xml";
+    private static final String POM_TEMPLATE_RESOURCE = "/pom-template.xml";
 
     public static void copyPomFile(File pomFile, String widgetsetId, WidgetSetInfo info) throws IOException {
 
@@ -112,26 +107,4 @@ public class CompilerUtils {
         return javaFile;
 
     }
-
-    public static int compileJava(File fileToCompile, List<File> classPath) {
-        int compilationResult = -1;
-        try {
-            JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-            System.out.println(compiler.getClass().getName());
-            List<String> options = new ArrayList<String>();
-            options.add("-classpath");
-            options.add(WidgetSetCompiler.getClassPathArg(classPath));
-            options.add("-s");
-            options.add(fileToCompile.getParent());
-            options.add(fileToCompile.getCanonicalPath());
-            WidgetSetCompiler.printArguments(options);
-            compilationResult = compiler.run(null, null, null, options.toArray(new String[options.size()]));
-        } catch (IOException ex) {
-            Logger.getLogger(WSCompilerService.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return compilationResult;
-    }
-
-
-
 }

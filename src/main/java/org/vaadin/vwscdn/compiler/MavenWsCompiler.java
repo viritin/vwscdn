@@ -33,9 +33,9 @@ public class MavenWsCompiler {
 
     public static String compileWidgetSet(String id, WidgetSetInfo info, File workDir, File toDir) throws MavenInvocationException, IOException {
         MavenWsCompiler compiler = new MavenWsCompiler(workDir,
-                "ws"+id, info);
+                "ws" + id, info);
         compiler.compile();
-        return "ws"+id;
+        return "ws" + id;
     }
 
     public MavenWsCompiler(File baseDir, String widgetSetId, WidgetSetInfo wsInfo) {
@@ -56,13 +56,13 @@ public class MavenWsCompiler {
     }
 
     private void compile() throws MavenInvocationException, IOException {
-        compile(this.pomFile, "compile");
-        compile(this.pomFile, "vaadin:update-widgetset");
-        compile(this.pomFile, "vaadin:compile");
-        FileUtils.copyDirectory(new File(baseDir, "public/" + widgetSetId), new File(WidgetSetServlet.PUBLIC_ROOT_DIR, widgetSetId));
+        mvn(this.pomFile, "compile");
+        mvn(this.pomFile, "vaadin:update-widgetset");
+        mvn(this.pomFile, "vaadin:compile");
+        publishWidgetSet(widgetSetId);
     }
 
-    private static void compile(File pom, String goal) throws MavenInvocationException, IOException {
+    private static void mvn(File pom, String goal) throws MavenInvocationException, IOException {
         InvocationRequest request = new DefaultInvocationRequest();
         request.setPomFile(pom);
         request.setGoals(Arrays.asList(goal));
@@ -73,6 +73,10 @@ public class MavenWsCompiler {
         if (result.getExitCode() != 0) {
             throw new IOException("Build failed: " + result.getExitCode(), result.getExecutionException());
         }
+    }
+
+    private void publishWidgetSet(String widgetSetId) throws IOException {
+        FileUtils.copyDirectory(new File(baseDir, "public/" + widgetSetId), new File(WidgetSetServlet.PUBLIC_ROOT_DIR, widgetSetId));
     }
 
 }
