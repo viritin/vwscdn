@@ -2,53 +2,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.vaadin.cdn</groupId>
-    <artifactId>vaadin-wscdn</artifactId>
-    <name>Vaadin Widgetset CDN</name>
+    <artifactId>vwscdn-service</artifactId>
+    <name>vwscdn-service</name>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vaadin.version>7.3.4</vaadin.version>
-        <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
+        <vaadin.version>7.3.6</vaadin.version>
     </properties>
-    
-    <repositories>
-        <repository>
-            <id>vaadin-addons</id>
-            <url>http://maven.vaadin.com/vaadin-addons</url>
-        </repository>
-    </repositories>
-
-    
+ 
     <dependencies>
-        <dependency>
-            <groupId>org.vaadin.virkki</groupId>
-            <artifactId>paperstack</artifactId>
-            <version>2.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.vaadin.addon</groupId>
-            <artifactId>idle</artifactId>
-            <version>1.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.vaadin.addon</groupId>
-            <artifactId>vaadin-charts</artifactId>
-            <version>1.1.7</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven.shared</groupId>
-            <artifactId>maven-invoker</artifactId>
-            <version>2.0.11</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>javax</groupId> 
-            <artifactId>javaee-api</artifactId>
-            <version>7.0</version>        
-        </dependency>        
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-server</artifactId>
@@ -65,22 +28,35 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-client</artifactId>
-            <version>${vaadin.version}</version>
-            <scope>provided</scope>
+            <groupId>org.apache.maven.shared</groupId>
+            <artifactId>maven-invoker</artifactId>
+            <version>2.0.11</version>
+            <type>jar</type>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jaxrs</artifactId>
+            <version>3.0.10.Final</version>
         </dependency>
         <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-themes</artifactId>
-            <version>${vaadin.version}</version>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jaxb-provider</artifactId>
+            <version>3.0.10.Final</version>
         </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-servlet-initializer</artifactId>
+            <version>3.0.10.Final</version>
+        </dependency>
+
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>3.0.1</version>
             <scope>provided</scope>
         </dependency>
+
     </dependencies>
 
     <build>

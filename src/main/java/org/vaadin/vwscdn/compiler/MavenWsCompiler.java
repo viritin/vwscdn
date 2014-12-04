@@ -11,15 +11,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.io.FileUtils;
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.InvocationResult;
 import org.apache.maven.shared.invoker.Invoker;
 import org.apache.maven.shared.invoker.MavenInvocationException;
+import org.codehaus.plexus.util.FileUtils;
 import org.vaadin.vwscdn.server.ServerConfig;
-import org.vaadin.vwscdn.server.WidgetSetServlet;
 import org.vaadin.vwscdn.shared.WidgetSetInfo;
 
 public class MavenWsCompiler {

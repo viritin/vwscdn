@@ -27,7 +27,7 @@ import org.vaadin.vwscdn.shared.RemoteWidgetSet;
  *
  * @author se
  */
-@Path("/vwscdn")
+@Path("/compiler")
 public class WSCompilerService {
 
     public WSCompilerService() {
@@ -38,7 +38,7 @@ public class WSCompilerService {
     @Produces("text/plain")
     @GET
     @Path("/ping")
-    public String test() {
+    public String ping() {
         return "Reply at " + new Date();
     }
 
