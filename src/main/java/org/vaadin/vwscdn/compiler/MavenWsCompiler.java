@@ -18,12 +18,11 @@ import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.InvocationResult;
 import org.apache.maven.shared.invoker.Invoker;
 import org.apache.maven.shared.invoker.MavenInvocationException;
+import org.vaadin.vwscdn.server.ServerConfig;
 import org.vaadin.vwscdn.server.WidgetSetServlet;
 import org.vaadin.vwscdn.shared.WidgetSetInfo;
 
 public class MavenWsCompiler {
-
-    public static final String MAVEN_HOME = "/usr/local/Cellar/maven/3.2.1/libexec";
 
     private final File baseDir;
     private File pomFile;
@@ -68,7 +67,7 @@ public class MavenWsCompiler {
         request.setGoals(Arrays.asList(goal));
 
         Invoker invoker = new DefaultInvoker();
-        invoker.setMavenHome(new File(MAVEN_HOME));
+        invoker.setMavenHome(ServerConfig.MAVEN_HOME);
         InvocationResult result = invoker.execute(request);
         if (result.getExitCode() != 0) {
             throw new IOException("Build failed: " + result.getExitCode(), result.getExecutionException());
@@ -76,7 +75,7 @@ public class MavenWsCompiler {
     }
 
     private void publishWidgetSet(String widgetSetId) throws IOException {
-        FileUtils.copyDirectory(new File(baseDir, "public/" + widgetSetId), new File(WidgetSetServlet.PUBLIC_ROOT_DIR, widgetSetId));
+        FileUtils.copyDirectory(new File(baseDir, "public/" + widgetSetId), new File(ServerConfig.PUBLIC_ROOT_DIR, widgetSetId));
     }
 
 }

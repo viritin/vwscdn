@@ -18,20 +18,20 @@ import javax.ws.rs.core.MediaType;
 import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.vaadin.vwscdn.shared.VSWCDNConfig;
 import org.vaadin.vwscdn.shared.WidgetSetInfo;
 import org.vaadin.vwscdn.shared.RemoteWidgetSet;
 
 
 public class VWSCDN {
 
-    private static final String DEFAULT_WIDGETSET_CDN_URL = "http://localhost:8080/vaadin-wscdn-1.0-SNAPSHOT/vwscdn/compile";
 
     private Client client;
     private WebTarget target;
     private final VaadinService service;
 
     public VWSCDN(VaadinService service) {
-        this(service, DEFAULT_WIDGETSET_CDN_URL);
+        this(service, VSWCDNConfig.SERVICE_URL);
     }
 
     public VWSCDN(VaadinService service, String vwscdnUrl) {

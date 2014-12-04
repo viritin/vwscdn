@@ -26,8 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet(value = {"/ws/*"}, asyncSupported = true)
 public class WidgetSetServlet extends HttpServlet {
 
-    public static File PUBLIC_ROOT_DIR = new File("/Users/se/ws/public");
-
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
         FileInputStream fileInputStream = null;
@@ -35,13 +33,13 @@ public class WidgetSetServlet extends HttpServlet {
         try {
             String wsName = request.getPathInfo();
             wsName = wsName.substring(1); // remove leading "/"
-            File wsFile = new File(PUBLIC_ROOT_DIR, wsName);
+            File wsFile = new File(ServerConfig.PUBLIC_ROOT_DIR, wsName);
             response.setContentType("text/javascript");
             response.setContentLength((int) wsFile.length());
             fileInputStream = new FileInputStream(wsFile);
             responseOutputStream = response.getOutputStream();
             int bytes;
-            
+
             Logger.getLogger(WidgetSetServlet.class.getName()).log(Level.INFO, "{1}: Loading widgetset ''{0}''", new String[]{wsName, request.getRemoteAddr()});
 
             while ((bytes = fileInputStream.read()) != -1) {

@@ -19,6 +19,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import org.vaadin.vwscdn.compiler.MavenWsCompiler;
 import org.vaadin.vwscdn.shared.AddonInfo;
+import org.vaadin.vwscdn.shared.VSWCDNConfig;
 import org.vaadin.vwscdn.shared.RemoteWidgetSet;
 
 /**
@@ -28,10 +29,6 @@ import org.vaadin.vwscdn.shared.RemoteWidgetSet;
  */
 @Path("/vwscdn")
 public class WSCompilerService {
-
-    //TODO: make this dynamic
-    public static final String publicWidgetSetBaseURL = "http://localhost:8080/vaadin-wscdn-1.0-SNAPSHOT/ws/";
-    public static final File COMPILER_ROOT_DIR = new File("/Users/se/ws/compiler");
 
     public WSCompilerService() {
     }
@@ -64,7 +61,7 @@ public class WSCompilerService {
         if (widgetset == null) {
             try {
                 //Old one: widgetset = WidgetSetCompiler.compileWidgetset(id, info);
-                widgetset = MavenWsCompiler.compileWidgetSet(id, info, COMPILER_ROOT_DIR, WidgetSetServlet.PUBLIC_ROOT_DIR);
+                widgetset = MavenWsCompiler.compileWidgetSet(id, info, ServerConfig.COMPILER_ROOT_DIR, ServerConfig.PUBLIC_ROOT_DIR);
             } catch (Exception ex) {
                 Logger.getLogger(WSCompilerService.class.getName()).log(Level.SEVERE, null, ex);
                 widgetset = null;
@@ -75,13 +72,13 @@ public class WSCompilerService {
         if (widgetset != null) {
             RemoteWidgetSet res = new RemoteWidgetSet();
             res.setWidgetSetName(widgetset);
-            res.setWidgetSetUrl(publicWidgetSetBaseURL + widgetset + "/" + widgetset + ".nocache.js");
+            res.setWidgetSetUrl(VSWCDNConfig.WS_BASE_URL + widgetset + "/" + widgetset + ".nocache.js");
             return res;
         }
 
         // This should never happen
         RemoteWidgetSet res = new RemoteWidgetSet();
-        res.setWidgetSetName("Failed to compile widgetset '"+ widgetset+"'");
+        res.setWidgetSetName("Failed to compile widgetset '" + widgetset + "'");
         return res;
     }
 
@@ -122,7 +119,7 @@ public class WSCompilerService {
 
     private String findPreCompiledWidgetset(String id) {
         String wsName = "ws" + id;
-        File wsFile = new File(WidgetSetServlet.PUBLIC_ROOT_DIR, wsName);
+        File wsFile = new File(ServerConfig.PUBLIC_ROOT_DIR, wsName);
         return (wsFile.exists() && wsFile.canRead()) ? wsName : null;
     }
 
