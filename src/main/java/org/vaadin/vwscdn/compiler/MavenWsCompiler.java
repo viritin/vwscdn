@@ -19,7 +19,7 @@ import org.apache.maven.shared.invoker.Invoker;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.codehaus.plexus.util.FileUtils;
 import org.vaadin.vwscdn.server.ServerConfig;
-import org.vaadin.vwscdn.shared.WidgetSetInfo;
+import org.vaadin.vwscdn.client.WidgetSetInfo;
 
 public class MavenWsCompiler {
 
@@ -56,14 +56,19 @@ public class MavenWsCompiler {
     private void compile() throws MavenInvocationException, IOException {
         mvn(this.pomFile, "compile");
         mvn(this.pomFile, "vaadin:update-widgetset");
-        mvn(this.pomFile, "vaadin:compile");
+        mvn(this.pomFile, "vaadin:compile", "-Xms128m -Xmx512m -XX:MaxPermSize=128m");
         publishWidgetSet(widgetSetId);
     }
 
+
     private static void mvn(File pom, String goal) throws MavenInvocationException, IOException {
+        mvn(pom, goal, null);
+    }
+    private static void mvn(File pom, String goal, String mavenOpts) throws MavenInvocationException, IOException {
         InvocationRequest request = new DefaultInvocationRequest();
         request.setPomFile(pom);
         request.setGoals(Arrays.asList(goal));
+        request.setMavenOpts(mavenOpts);
 
         Invoker invoker = new DefaultInvoker();
         invoker.setMavenHome(ServerConfig.MAVEN_HOME);

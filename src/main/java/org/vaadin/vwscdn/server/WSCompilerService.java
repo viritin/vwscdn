@@ -5,8 +5,9 @@
  */
 package org.vaadin.vwscdn.server;
 
-import org.vaadin.vwscdn.shared.WidgetSetInfo;
+import org.vaadin.vwscdn.client.WidgetSetInfo;
 import java.io.File;
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.Date;
 import java.util.logging.Level;
@@ -17,10 +18,10 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
 import javax.ws.rs.Produces;
+import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.vaadin.vwscdn.compiler.MavenWsCompiler;
-import org.vaadin.vwscdn.shared.AddonInfo;
-import org.vaadin.vwscdn.shared.VSWCDNConfig;
-import org.vaadin.vwscdn.shared.RemoteWidgetSet;
+import org.vaadin.vwscdn.client.AddonInfo;
+import org.vaadin.vwscdn.client.RemoteWidgetSet;
 
 /**
  *
@@ -56,15 +57,17 @@ public class WSCompilerService {
 
         // Try to find an existing widgetset
         String widgetset = findPreCompiledWidgetset(id);
-
+        String error = null;
+        
         // If not found, compile a new one
         if (widgetset == null) {
             try {
                 //Old one: widgetset = WidgetSetCompiler.compileWidgetset(id, info);
                 widgetset = MavenWsCompiler.compileWidgetSet(id, info, ServerConfig.COMPILER_ROOT_DIR, ServerConfig.PUBLIC_ROOT_DIR);
             } catch (Exception ex) {
-                Logger.getLogger(WSCompilerService.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(WSCompilerService.class.getName()).log(Level.SEVERE, "Widget set compilation failed.", ex);
                 widgetset = null;
+                error = "Failed to compile widgetset: " + ex.getMessage();
             }
         }
 
@@ -72,12 +75,13 @@ public class WSCompilerService {
         if (widgetset != null) {
             RemoteWidgetSet res = new RemoteWidgetSet();
             res.setWidgetSetName(widgetset);
-            res.setWidgetSetUrl(VSWCDNConfig.WS_BASE_URL + widgetset + "/" + widgetset + ".nocache.js");
+            res.setWidgetSetUrl(ServerConfig.WS_BASE_URL + widgetset + "/" + widgetset + ".nocache.js");
             return res;
         }
 
         // This should never happen
         RemoteWidgetSet res = new RemoteWidgetSet();
+            res.setWidgetSetUrl(ServerConfig.WS_MISSING_URL +"?ws="+ widgetset+"&err="+error+"");
         res.setWidgetSetName("Failed to compile widgetset '" + widgetset + "'");
         return res;
     }

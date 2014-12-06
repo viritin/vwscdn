@@ -11,9 +11,9 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.vaadin.vwscdn.server.WSCompilerService;
-import org.vaadin.vwscdn.shared.AddonInfo;
-import org.vaadin.vwscdn.shared.WidgetInfo;
-import org.vaadin.vwscdn.shared.WidgetSetInfo;
+import org.vaadin.vwscdn.client.AddonInfo;
+import org.vaadin.vwscdn.client.WidgetInfo;
+import org.vaadin.vwscdn.client.WidgetSetInfo;
 
 /**
  * Some file copying utilities for widget set compilation.
