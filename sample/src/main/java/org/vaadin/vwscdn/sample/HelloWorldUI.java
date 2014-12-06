@@ -6,8 +6,6 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
@@ -39,7 +37,7 @@ public class HelloWorldUI extends UI {
         protected void servletInitialized() throws ServletException {
             super.servletInitialized();
 
-            //TODO: Here this is just hand crafted. Automate. Externalize.
+            //TODO: Here this is just hand crafted for now. Automate. Externalize.
             WidgetSetInfo ws = new WidgetSetInfo("7.3.6")
                     .eager(new WidgetInfo(TextField.class))
                     .eager(new WidgetInfo(Label.class))
@@ -51,7 +49,6 @@ public class HelloWorldUI extends UI {
             VWSCDN remote = new VWSCDN(getService(), "http://localhost:8080/vwscdn");
             remote.useRemoteWidgetset(ws);
         }
-
     }
 
     @Override
@@ -65,7 +62,7 @@ public class HelloWorldUI extends UI {
 
             @Override
             public void userInactive() {
-                Notification.show("INACT");
+                Notification.show("Inactive");
             }
 
             @Override
@@ -73,28 +70,10 @@ public class HelloWorldUI extends UI {
             }
         });
         layout.addComponent(new Label("Hello World!"));
-        layout.addComponent(new Label("Greetings from server."));
-        layout.addComponent(new Label("I have "
-                + Runtime.getRuntime().availableProcessors()
-                + " processors and "
-                + (Runtime.getRuntime().totalMemory() / 1000000)
-                + " MB total memory."));
-
-        Button button = new Button("Click Me");
-        button.addClickListener(new Button.ClickListener() {
-
-            @Override
-            public void buttonClick(ClickEvent event) {
-                clickCounter++;
-                clickCounterLabel.setValue("Clicks: " + clickCounter);
-                Notification.show("Thank you for clicking.");
-
-            }
-        });
         PaperStack stack = new PaperStack();
         layout.addComponent(stack);
 
-        stack.addComponent(button);
+        stack.addComponent(new Label("Testing PaperStack!"));
         Chart chart = new Chart(ChartType.PIE);
         chart.getConfiguration().addSeries(new DataSeries(new String[]{"A", "B"}, new Number[]{1, 2, 3, 4}));
         stack.addComponent(chart);
