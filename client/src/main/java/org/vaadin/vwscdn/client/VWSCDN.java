@@ -10,6 +10,8 @@ import com.vaadin.server.BootstrapListener;
 import com.vaadin.server.BootstrapPageResponse;
 import com.vaadin.server.SessionInitEvent;
 import com.vaadin.server.VaadinService;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -19,10 +21,9 @@ import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-
 public class VWSCDN {
 
-    public static final String COMPILE_SERVICE_URL = "http://sami2.app.fi/rws/api/compiler/compile";
+    public static final String COMPILE_SERVICE_URL = "http://sami.app.fi/rws";
 
     private Client client;
     private WebTarget target;
@@ -34,7 +35,8 @@ public class VWSCDN {
 
     public VWSCDN(VaadinService service, String vwscdnUrl) {
         this.client = ClientBuilder.newClient();
-        this.target = client.target(vwscdnUrl);
+        vwscdnUrl = vwscdnUrl.endsWith("/") ? vwscdnUrl : vwscdnUrl + "/";
+        this.target = client.target(vwscdnUrl + "api/compiler/compile");
         this.service = service;
     }
 
@@ -49,12 +51,16 @@ public class VWSCDN {
     }
 
     public RemoteWidgetSet getRemoteWidgetSet(WidgetSetInfo info) {
-        return target
-                .request(MediaType.APPLICATION_JSON)
-                .post(Entity.json(info), RemoteWidgetSet.class);
+        try {
+            return target
+                    .request(MediaType.APPLICATION_JSON)
+                    .post(Entity.json(info), RemoteWidgetSet.class);
+
+        } catch (javax.ws.rs.NotFoundException ex) {
+            Logger.getLogger(VWSCDN.class.getName()).log(Level.SEVERE, "Failed to connect service " + target.getUri() + "", ex);
+        }
+        return null;
     }
-
-
 
     /* Session initialization listener to override the javascript to load widgetset */
     public static class SessionInitListener implements com.vaadin.server.SessionInitListener {

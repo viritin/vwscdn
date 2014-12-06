@@ -40,7 +40,7 @@ public class HelloWorldUI extends UI {
             super.servletInitialized();
 
             //TODO: Here this is just hand crafted. Automate. Externalize.
-            WidgetSetInfo ws = new WidgetSetInfo("7.3.4")
+            WidgetSetInfo ws = new WidgetSetInfo("7.3.6")
                     .eager(new WidgetInfo(TextField.class))
                     .eager(new WidgetInfo(Label.class))
                     .addon(new AddonInfo("com.vaadin.addon", "vaadin-charts", "1.1.7"))
@@ -48,7 +48,7 @@ public class HelloWorldUI extends UI {
                     .addon(new AddonInfo("org.vaadin.addon", "idle", "1.0.1"));
 
             // Intialize the widgetset. This might take a while at first run.
-            VWSCDN remote = new VWSCDN(getService());
+            VWSCDN remote = new VWSCDN(getService(), "http://localhost:8080/vwscdn");
             remote.useRemoteWidgetset(ws);
         }
 
