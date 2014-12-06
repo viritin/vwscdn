@@ -5,6 +5,9 @@
  */
 package org.vaadin.vwscdn.client;
 
+import com.vaadin.server.VaadinService;
+import com.vaadin.server.VaadinServlet;
+import com.vaadin.shared.Version;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,10 +23,6 @@ public class WidgetSetInfo {
     List<AddonInfo> addons;
 
     public WidgetSetInfo() {
-    }
-
-    public WidgetSetInfo(String vaadinVersion) {
-        this.vaadinVersion = vaadinVersion;
     }
 
     public String getVaadinVersion() {

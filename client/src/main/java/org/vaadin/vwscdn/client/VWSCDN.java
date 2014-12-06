@@ -10,6 +10,7 @@ import com.vaadin.server.BootstrapListener;
 import com.vaadin.server.BootstrapPageResponse;
 import com.vaadin.server.SessionInitEvent;
 import com.vaadin.server.VaadinService;
+import com.vaadin.shared.Version;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.client.Client;
@@ -41,6 +42,8 @@ public class VWSCDN {
     }
 
     public void useRemoteWidgetset(WidgetSetInfo info) {
+        // Take the Vaadin version
+        info.setVaadinVersion(Version.getFullVersion());
 
         // Get remote widgetset
         RemoteWidgetSet ws = getRemoteWidgetSet(info);
