@@ -37,7 +37,6 @@ public class HelloWorldUI extends UI {
         protected void servletInitialized() throws ServletException {
             super.servletInitialized();
 
-            //TODO: Here this is just hand crafted for now. Automate. Externalize.
             WidgetSetInfo ws = new WidgetSetInfo()
                     .eager(new WidgetInfo(TextField.class))
                     .eager(new WidgetInfo(Label.class))
