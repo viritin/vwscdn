@@ -45,7 +45,7 @@ public class HelloWorldUI extends UI {
                     .addon(new AddonInfo("org.vaadin.addon", "idle", "1.0.1"));
 
             // Intialize the widgetset. This might take a while at first run.
-            VWSCDN remote = new VWSCDN(getService(), "http://localhost:8080/vwscdn");
+            VWSCDN remote = new VWSCDN(getService());
             remote.useRemoteWidgetset(ws);
         }
     }

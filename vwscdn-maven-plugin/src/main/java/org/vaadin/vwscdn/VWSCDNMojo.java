@@ -102,7 +102,7 @@ public class VWSCDNMojo
             System.out.println(""
                     + "\n"
                     + "        // Intialize the widgetset. This might take a while at first run.\n"
-                    + "        VWSCDN remote = new VWSCDN(getService(), \"http://localhost:8080/vwscdn\");\n"
+                    + "        VWSCDN remote = new VWSCDN(getService());\n"
                     + "        remote.useRemoteWidgetset(ws);\n"
                     + "    }\n"
                     + "}"
