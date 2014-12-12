@@ -58,7 +58,7 @@ Add the following dependency to your maven pom.xml:
         <dependency>
             <groupId>org.vaadin.vwscdn</groupId>
             <artifactId>vwscdn-client</artifactId>
-            <version>2.0-SNAPSHOT</version>
+            <version>3.0-SNAPSHOT</version>
         </dependency>
 
 
@@ -73,16 +73,11 @@ To use in the application add the following to your application Servlet class:
         protected void servletInitialized() throws ServletException {
             super.servletInitialized();
 
-            WidgetSetInfo ws = new WidgetSetInfo()
-                    .eager(new WidgetInfo(TextField.class))
-                    .eager(new WidgetInfo(Label.class))
-                    .addon(new AddonInfo("com.vaadin.addon", "vaadin-charts", "1.1.7"))
-                    .addon(new AddonInfo("org.vaadin.virkki", "paperstack", "2.0.0"))
-                    .addon(new AddonInfo("org.vaadin.addon", "idle", "1.0.1"));
-
             // Intialize the widgetset. This might take a while at first run.
-            VWSCDN remote = new VWSCDN(getService());
-            remote.useRemoteWidgetset(ws);
+            WidgetSet.create()
+                    .addon("com.vaadin.addon", "vaadin-charts", "1.1.7")
+                    .addon("org.vaadin.virkki", "paperstack", "2.0.0")
+                    .init();
         }
     }
 
@@ -97,7 +92,7 @@ First, install the maven plugin to your project:
          <plugin>
              <groupId>org.vaadin.vwscdn</groupId>
              <artifactId>vwscdn-maven-plugin</artifactId>
-             <version>2.0-SNAPSHOT</version>
+             <version>3.0-SNAPSHOT</version>
          </plugin>
     </pluginManagement>
     
