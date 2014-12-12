@@ -84,26 +84,14 @@ Maven plugin can be used to automatically generate the servlet initialization co
 
 First, install the maven plugin to your project:
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.vaadin.vwscdn</groupId>
-                <artifactId>vwscdn-maven-plugin</artifactId>
-                <version>2.0-SNAPSHOT</version>
-            </plugin>
-        </plugins>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>corg.vaadin.vwscdn</groupId>
-                    <artifactId>vwscdn-maven-plugin</artifactId>
-                    <version>2.0-SNAPSHOT</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
+    <plugin>
+        <groupId>org.vaadin.vwscdn</groupId>
+        <artifactId>vwscdn-maven-plugin</artifactId>
+        <version>2.0-SNAPSHOT</version>
+    </plugin>
 
-Then you can use the following comand to generate the client code:
+
+Then you can use the following command to generate the client code:
 
      mvn -e vwscdn:generate
      
