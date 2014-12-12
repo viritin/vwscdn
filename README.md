@@ -42,7 +42,13 @@ Configuration sample:
 
 The widgetset compiler service
 ---
-The service uses Maven to compile the requested widgetset on the fly. For configuration a 
+The service uses Maven to compile the requested widgetset on the fly. Generation creates a unique ID for the widgetset based on the the following configuration:
+- Vaadin version 
+- Eager loading of widgets (by default deferred loading is used)
+- addon dependencies from Vaadin directory using Maven
+
+Due to slow GWT compilation, the first run takes time. But as widgetsets are cached, the following requests just serve the static file.
+
 
 Using the client
 ---
@@ -58,7 +64,6 @@ To use in the application add the following to your application Servlet class:
         protected void servletInitialized() throws ServletException {
             super.servletInitialized();
 
-            //TODO: Here this is just hand crafted for now. Automate. Externalize.
             WidgetSetInfo ws = new WidgetSetInfo()
                     .eager(new WidgetInfo(TextField.class))
                     .eager(new WidgetInfo(Label.class))
@@ -71,3 +76,34 @@ To use in the application add the following to your application Servlet class:
             remote.useRemoteWidgetset(ws);
         }
     }
+
+Maven plugin
+---
+
+Maven plugin can be used to automatically generate the servlet initialization code for the client. It uses the project classpath to resolve the included add-ons. 
+
+First, install the maven plugin to your project:
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.vaadin.vwscdn</groupId>
+                <artifactId>vwscdn-maven-plugin</artifactId>
+                <version>2.0-SNAPSHOT</version>
+            </plugin>
+        </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>corg.vaadin.vwscdn</groupId>
+                    <artifactId>vwscdn-maven-plugin</artifactId>
+                    <version>2.0-SNAPSHOT</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+Then you can use the following comand to generate the client code:
+
+     mvn -e vwscdn:generate
+     
