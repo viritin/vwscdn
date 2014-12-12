@@ -53,6 +53,15 @@ Due to slow GWT compilation, the first run takes time. But as widgetsets are cac
 Using the client
 ---
 
+Add the following dependency to your maven pom.xml:
+
+        <dependency>
+            <groupId>org.vaadin.vwscdn</groupId>
+            <artifactId>vwscdn-client</artifactId>
+            <version>2.0-SNAPSHOT</version>
+        </dependency>
+
+
 To use in the application add the following to your application Servlet class:
 
 
@@ -72,7 +81,7 @@ To use in the application add the following to your application Servlet class:
                     .addon(new AddonInfo("org.vaadin.addon", "idle", "1.0.1"));
 
             // Intialize the widgetset. This might take a while at first run.
-            VWSCDN remote = new VWSCDN(getService(), "http://localhost:8080/vwscdn");
+            VWSCDN remote = new VWSCDN(getService());
             remote.useRemoteWidgetset(ws);
         }
     }
