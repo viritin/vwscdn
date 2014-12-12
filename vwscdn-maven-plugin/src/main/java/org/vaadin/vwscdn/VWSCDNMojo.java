@@ -21,8 +21,8 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -66,50 +66,46 @@ public class VWSCDNMojo
                     .getAvailableWidgetSets(urls);
             Set<Artifact> artifacts = project.getArtifacts();
 
-            System.out.println("@WebServlet(value = {\"/*\"}, asyncSupported = true)\n"
+            System.out.println(
+                    "@WebServlet(value = {\"/*\"}, asyncSupported = true)\n"
                     + "@VaadinServletConfiguration(productionMode = false, ui = HelloWorldUI.class)\n"
                     + "public static class Servlet extends VaadinServlet {\n"
                     + "\n"
                     + "    @Override\n"
                     + "    protected void servletInitialized() throws ServletException {\n"
                     + "        super.servletInitialized();\n"
-                    + "\n"
-                    + "        WidgetSetInfo ws = new WidgetSetInfo()\n");
-            boolean first = true;
+                    + "\n");
+            Set<Artifact> requiredArtifacts = new HashSet<>();
             for (String name : availableWidgetSets.keySet()) {
                 URL url = availableWidgetSets.get(name);
                 for (Artifact a : artifacts) {
                     String u = url.toExternalForm();
                     if (u.contains(a.getArtifactId())
                             && u.contains(a.getBaseVersion())) {
-                        String aid = a.getArtifactId();
-                        String gid = a.getGroupId();
-                        String v = a.getBaseVersion();
-                        if (!first) {
-                            System.out.println("");
-                        } else {
-                            first = false;
-                        }
-                        System.out.print("                .addon(new AddonInfo(\"" + gid + "\", \"" + aid + "\", \"" + v + "\"))");
+                        requiredArtifacts.add(a);
                     }
-
                 }
-
             }
-            if (!first) {
-                System.err.println(";");
+
+            System.out.println(
+                    "        // Intialize the widgetset. This might take a while at first run.\n"
+                    + "        new VWSCDN(getService()).useRemoteWidgetset(new WidgetSetInfo()");
+            for (Artifact a : requiredArtifacts) {
+                String aid = a.getArtifactId();
+                String gid = a.getGroupId();
+                String v = a.getBaseVersion();
+                System.out.print(
+                        "                .addon(new AddonInfo(\"" + gid + "\", \"" + aid + "\", \"" + v + "\"))\n");
             }
             System.out.println(""
-                    + "\n"
-                    + "        // Intialize the widgetset. This might take a while at first run.\n"
-                    + "        VWSCDN remote = new VWSCDN(getService());\n"
-                    + "        remote.useRemoteWidgetset(ws);\n"
+                    + "        );\n"
                     + "    }\n"
                     + "}"
             );
 
         } catch (DependencyResolutionRequiredException | MalformedURLException ex) {
-            Logger.getLogger(VWSCDNMojo.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(VWSCDNMojo.class.getName()).log(Level.SEVERE, null,
+                    ex);
         }
 
     }
