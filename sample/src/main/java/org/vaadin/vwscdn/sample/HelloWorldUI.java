@@ -35,12 +35,9 @@ public class HelloWorldUI extends UI {
             super.servletInitialized();
 
             // Intialize the widgetset. This might take a while at first run.
-            WidgetSet.create()
-                    .eager(TextField.class)
-                    .eager(Label.class)
+            WidgetSet.create("http://localhost:8080/vwscdn")
                     .addon("com.vaadin.addon", "vaadin-charts", "1.1.7")
                     .addon("org.vaadin.virkki", "paperstack", "2.0.0")
-                    .addon("org.vaadin.addon", "idle", "1.0.1")
                     .init();
         }
     }

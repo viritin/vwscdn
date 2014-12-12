@@ -73,32 +73,31 @@ public class VWSCDNMojo
                     + "\n"
                     + "    @Override\n"
                     + "    protected void servletInitialized() throws ServletException {\n"
-                    + "        super.servletInitialized();\n"
-                    + "\n");
+                    + "        super.servletInitialized();\n");
             Set<Artifact> requiredArtifacts = new HashSet<>();
             for (String name : availableWidgetSets.keySet()) {
                 URL url = availableWidgetSets.get(name);
                 for (Artifact a : artifacts) {
                     String u = url.toExternalForm();
                     if (u.contains(a.getArtifactId())
-                            && u.contains(a.getBaseVersion())) {
+                            && u.contains(a.getBaseVersion()) && !u.contains("vaadin-client")) {
                         requiredArtifacts.add(a);
                     }
                 }
             }
 
-            System.out.println(
-                    "        // Intialize the widgetset. This might take a while at first run.\n"
-                    + "        new VWSCDN(getService()).useRemoteWidgetset(new WidgetSetInfo()");
+            System.out.println(""
+                    + "        // Intialize the widgetset. This might take a while at first run.\n"
+                    + "        WidgetSet.create()");
             for (Artifact a : requiredArtifacts) {
                 String aid = a.getArtifactId();
                 String gid = a.getGroupId();
                 String v = a.getBaseVersion();
                 System.out.print(
-                        "                .addon(new AddonInfo(\"" + gid + "\", \"" + aid + "\", \"" + v + "\"))\n");
+                        "            .addon(\"" + gid + "\", \"" + aid + "\", \"" + v + "\")\n");
             }
             System.out.println(""
-                    + "        );\n"
+                    + "            .init();\n\n"
                     + "    }\n"
                     + "}"
             );
