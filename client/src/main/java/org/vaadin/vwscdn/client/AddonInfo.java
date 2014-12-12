@@ -2,6 +2,7 @@ package org.vaadin.vwscdn.client;
 
 import javax.xml.bind.annotation.XmlTransient;
 
+/* Vaadin add-on metadata. */
 public class AddonInfo {
 
     private String groupId;

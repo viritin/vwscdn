@@ -1,10 +1,6 @@
 package org.vaadin.vwscdn.client;
 
-/**
- *
- * @author se
- */
-public class RemoteWidgetSet {
+public class WidgetSetResponse {
 
     private String widgetSetName;
     private String widgetSetUrl;

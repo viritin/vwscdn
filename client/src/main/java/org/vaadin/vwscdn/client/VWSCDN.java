@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.vaadin.vwscdn.client;
 
 import com.vaadin.server.BootstrapFragmentResponse;
@@ -22,7 +17,7 @@ import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-public class VWSCDN {
+class VWSCDN {
 
     public static final String COMPILE_SERVICE_URL = "http://sami.app.fi/rws";
 
@@ -35,6 +30,7 @@ public class VWSCDN {
     }
 
     public VWSCDN(VaadinService service, String vwscdnUrl) {
+        vwscdnUrl = vwscdnUrl == null ? COMPILE_SERVICE_URL : vwscdnUrl;
         this.client = ClientBuilder.newClient();
         vwscdnUrl = vwscdnUrl.endsWith("/") ? vwscdnUrl : vwscdnUrl + "/";
         this.target = client.target(vwscdnUrl + "api/compiler/compile");
@@ -46,18 +42,18 @@ public class VWSCDN {
         info.setVaadinVersion(Version.getFullVersion());
 
         // Get remote widgetset
-        RemoteWidgetSet ws = getRemoteWidgetSet(info);
+        WidgetSetResponse ws = getRemoteWidgetSet(info);
 
         // Rewrite the bootstrap            
         service.addSessionInitListener(new VWSCDN.SessionInitListener(ws));
 
     }
 
-    public RemoteWidgetSet getRemoteWidgetSet(WidgetSetInfo info) {
+    public WidgetSetResponse getRemoteWidgetSet(WidgetSetInfo info) {
         try {
             return target
                     .request(MediaType.APPLICATION_JSON)
-                    .post(Entity.json(info), RemoteWidgetSet.class);
+                    .post(Entity.json(info), WidgetSetResponse.class);
 
         } catch (javax.ws.rs.NotFoundException ex) {
             Logger.getLogger(VWSCDN.class.getName()).log(Level.SEVERE, "Failed to connect service " + target.getUri() + "", ex);
@@ -68,9 +64,9 @@ public class VWSCDN {
     /* Session initialization listener to override the javascript to load widgetset */
     public static class SessionInitListener implements com.vaadin.server.SessionInitListener {
 
-        private final RemoteWidgetSet ws;
+        private final WidgetSetResponse ws;
 
-        public SessionInitListener(RemoteWidgetSet ws) {
+        public SessionInitListener(WidgetSetResponse ws) {
             this.ws = ws;
         }
 

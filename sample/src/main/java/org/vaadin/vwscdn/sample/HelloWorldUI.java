@@ -17,10 +17,7 @@ import com.vaadin.addon.charts.model.ChartType;
 import com.vaadin.addon.charts.model.DataSeries;
 import org.vaadin.addons.idle.Idle;
 import org.vaadin.virkki.paperstack.PaperStack;
-import org.vaadin.vwscdn.client.VWSCDN;
-import org.vaadin.vwscdn.client.WidgetInfo;
-import org.vaadin.vwscdn.client.AddonInfo;
-import org.vaadin.vwscdn.client.WidgetSetInfo;
+import org.vaadin.vwscdn.client.WidgetSet;
 
 @Theme("valo")
 @SuppressWarnings("serial")
@@ -37,16 +34,14 @@ public class HelloWorldUI extends UI {
         protected void servletInitialized() throws ServletException {
             super.servletInitialized();
 
-            WidgetSetInfo ws = new WidgetSetInfo()
-                    .eager(new WidgetInfo(TextField.class))
-                    .eager(new WidgetInfo(Label.class))
-                    .addon(new AddonInfo("com.vaadin.addon", "vaadin-charts", "1.1.7"))
-                    .addon(new AddonInfo("org.vaadin.virkki", "paperstack", "2.0.0"))
-                    .addon(new AddonInfo("org.vaadin.addon", "idle", "1.0.1"));
-
             // Intialize the widgetset. This might take a while at first run.
-            VWSCDN remote = new VWSCDN(getService());
-            remote.useRemoteWidgetset(ws);
+            WidgetSet.create("http://localhost:8080/vwscdn")
+                    .eager(TextField.class)
+                    .eager(Label.class)
+                    .addon("com.vaadin.addon", "vaadin-charts", "1.1.7")
+                    .addon("org.vaadin.virkki", "paperstack", "2.0.0")
+                    .addon("org.vaadin.addon", "idle", "1.0.1")
+                    .init();
         }
     }
 

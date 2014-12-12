@@ -1,13 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.vaadin.vwscdn.client;
 
-import com.vaadin.server.VaadinService;
-import com.vaadin.server.VaadinServlet;
-import com.vaadin.shared.Version;
+import com.vaadin.ui.Component;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -19,7 +12,7 @@ import java.util.List;
 public class WidgetSetInfo {
 
     String vaadinVersion;
-    List<WidgetInfo> eager;
+    List<String> eager;
     List<AddonInfo> addons;
 
     public WidgetSetInfo() {
@@ -33,11 +26,11 @@ public class WidgetSetInfo {
         this.vaadinVersion = vaadinVersion;
     }
 
-    public List<WidgetInfo> getEager() {
+    public List<String> getEager() {
         return eager;
     }
 
-    private void setEager(List<WidgetInfo> eager) {
+    private void setEager(List<String> eager) {
         this.eager = eager;
     }
 
@@ -57,11 +50,15 @@ public class WidgetSetInfo {
         return info;
     }
 
-    public WidgetSetInfo eager(WidgetInfo widgetInfo) {
+    public WidgetSetInfo eager(Class<? extends Component> componentClass) {
+        return eager(componentClass.getCanonicalName());
+    }
+
+    public WidgetSetInfo eager(String componentFqn) {
         if (eager == null) {
             eager = new ArrayList<>();
         }
-        eager.add(widgetInfo);
+        eager.add(componentFqn);
         return this;
     }
 
@@ -73,6 +70,8 @@ public class WidgetSetInfo {
         return this;
     }
 
-
+    public WidgetSetInfo addon(String groupId, String artifactId, String version) {
+        return addon(new AddonInfo(groupId, artifactId, version));
+    }
 
 }
