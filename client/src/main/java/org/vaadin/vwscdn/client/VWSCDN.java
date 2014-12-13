@@ -87,7 +87,7 @@ class VWSCDN {
                 @Override
                 public void modifyBootstrapPage(BootstrapPageResponse response) {
                     // Update the bootstrap page
-                    if (ws != null && ws.getStatus() == PublishStatus.AVAILABLE) {
+                    if (ws != null && ws.getStatus() == PublishState.AVAILABLE) {
                         Document document = response.getDocument();
                         Element scriptTag = document.getElementsByTag("script").last();
                         String script = scriptTag.html();

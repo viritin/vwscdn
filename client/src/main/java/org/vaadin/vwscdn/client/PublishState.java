@@ -1,6 +1,6 @@
 package org.vaadin.vwscdn.client;
 
-public enum PublishStatus {
+public enum PublishState {
     UNKNOWN, // We don't have idea yet
     NOT_FOUND, // No widgetset exists with an id and has not been compiled
     AVAILABLE, // Compiled and published

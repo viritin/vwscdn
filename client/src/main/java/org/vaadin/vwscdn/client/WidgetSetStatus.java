@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class WidgetSetStatus {
 
-    private PublishStatus status = PublishStatus.NOT_FOUND;
+    private PublishState state = PublishState.NOT_FOUND;
     private String id;
     private String info;
     private String compileHost;
@@ -69,12 +69,12 @@ public class WidgetSetStatus {
         this.compileHost = compileHost;
     }
 
-    public PublishStatus getStatus() {
-        return status;
+    public PublishState getPublishState() {
+        return state;
     }
 
-    public void setStatus(PublishStatus status) {
-        this.status = status;
+    public void setPublishState(PublishState state) {
+        this.state = state;
     }
 
 }
