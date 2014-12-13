@@ -84,7 +84,7 @@ To use in the application add the following to your application Servlet class. T
 Maven plugin
 ---
 
-Maven plugin can be used to automatically generate the servlet initialization code for the client. It uses the project classpath to resolve the included add-ons. 
+Maven plugin can be used to automatically generate MyWidgetSetService.java code for the client. It uses the project classpath to resolve the included add-ons. 
 
 First, install the maven plugin to your project:
 
@@ -135,7 +135,7 @@ First, install the maven plugin to your project:
     
 
 
-Then you can use the following command to generate the client code:
+If you want to run generation of MyWidgetSetService.java by hand you can use the following command:
 
      mvn -e vwscdn:generate
      
