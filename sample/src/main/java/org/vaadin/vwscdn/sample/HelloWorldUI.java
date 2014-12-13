@@ -30,7 +30,7 @@ public class HelloWorldUI extends UI {
     @VaadinServletConfiguration(productionMode = false, ui = HelloWorldUI.class)
     public static class Servlet extends VaadinServlet {
 
-        WidgetSetService wsService = new MyWidgetSetService();
+        WidgetSetService wsService = new CustomWidgetSetService();
 
         @Override
         protected void servletInitialized() throws ServletException {

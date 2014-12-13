@@ -17,6 +17,7 @@ package org.vaadin.vwscdn;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.MalformedURLException;
@@ -266,7 +267,7 @@ public class ClassPathExplorer {
                     }
                 }
             } catch (IOException e) {
-                error("Error parsing jar file", e);
+                log("Error parsing jar file: " + location);
             }
 
         }
