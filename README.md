@@ -13,8 +13,11 @@ Running the project
 
 To run the sample and service at localhost use:
 
-    mvn -Dvwscdn.config=/path/to/working/directory/service-config.properties jetty:run
+    mvn jetty:run
 
+Or, if you run the service locally also:
+
+    mvn -Dvwscdn.config=/path/to/working/directory/service-config.properties -Dvwscdn.local jetty:run
 
 Service uses a working directory to build/publish widgetsets. By default it is the folder where the configuration 
 file is, but different folder can be also specified in the config file.
@@ -62,22 +65,19 @@ Add the following dependency to your maven pom.xml:
         </dependency>
 
 
-To use in the application add the following to your application Servlet class:
+To use in the application add the following to your application Servlet class. The MyWidgetSetService class is automatically generated during build.
 
 
     @WebServlet(value = {"/*"}, asyncSupported = true)
     @VaadinServletConfiguration(productionMode = false, ui = HelloWorldUI.class)
     public static class Servlet extends VaadinServlet {
 
+        WidgetSetService wsService = new MyWidgetSetService();
+
         @Override
         protected void servletInitialized() throws ServletException {
             super.servletInitialized();
-
-            // Intialize the widgetset. This might take a while at first run.
-            WidgetSet.create()
-                    .addon("com.vaadin.addon", "vaadin-charts", "1.1.7")
-                    .addon("org.vaadin.virkki", "paperstack", "2.0.0")
-                    .init();
+            wsService.init();
         }
     }
 
@@ -88,13 +88,50 @@ Maven plugin can be used to automatically generate the servlet initialization co
 
 First, install the maven plugin to your project:
 
-    <pluginManagement>
-         <plugin>
-             <groupId>org.vaadin.vwscdn</groupId>
-             <artifactId>vwscdn-maven-plugin</artifactId>
-             <version>3.0-SNAPSHOT</version>
-         </plugin>
-    </pluginManagement>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.vaadin.vwscdn</groupId>
+                <artifactId>vwscdn-maven-plugin</artifactId>
+                <version>3.0-SNAPSHOT</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.9.1</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources/vwscdn</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>corg.vaadin.vwscdn</groupId>
+                    <artifactId>vwscdn-maven-plugin</artifactId>
+                    <version>2.0-SNAPSHOT</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
     
 
 
