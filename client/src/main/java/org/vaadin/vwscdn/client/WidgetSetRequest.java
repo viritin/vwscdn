@@ -3,7 +3,10 @@ package org.vaadin.vwscdn.client;
 import com.vaadin.ui.Component;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class WidgetSetRequest {
 
@@ -87,7 +90,19 @@ public class WidgetSetRequest {
 
     /* Unique and human-readable string defining the widgetset. */
     public String toWidgetsetString() {
-        return "{vaadinVersion=" + vaadinVersion + ", eager=" + eager + ", addons=" + addons + '}';
+        SortedSet<String> eagerNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        if (eager != null) {
+            eagerNames.addAll(eager);
+        }
+
+        SortedSet<String> addonNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        if (addons != null) {
+            for (AddonInfo ci : addons) {
+                addonNames.add(ci.getFullMavenId());
+            }
+        }
+
+        return "{vaadinVersion=" + vaadinVersion + ", eager=" + eagerNames + ", addons=" + addonNames + '}';
     }
-    
+
 }
