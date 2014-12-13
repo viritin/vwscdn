@@ -9,9 +9,9 @@ public class AddonInfo {
     private String artifactId;
     private String version;
 
-    public AddonInfo() {    
+    public AddonInfo() {
     }
-    
+
     public AddonInfo(String groupId, String artifactId, String version) {
         this.groupId = groupId;
         this.artifactId = artifactId;
@@ -59,4 +59,10 @@ public class AddonInfo {
         b.append("</version></dependency>");
         return b.toString();
     }
+
+    @Override
+    public String toString() {
+        return "{" + "groupId=" + groupId + ", artifactId=" + artifactId + ", version=" + version + '}';
+    }
+
 }

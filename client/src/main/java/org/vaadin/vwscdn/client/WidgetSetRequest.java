@@ -5,17 +5,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- *
- * @author se
- */
-public class WidgetSetInfo {
+public class WidgetSetRequest {
+
+    boolean asynchronous = false;
 
     String vaadinVersion;
     List<String> eager;
     List<AddonInfo> addons;
 
-    public WidgetSetInfo() {
+    public WidgetSetRequest() {
+    }
+
+    public boolean isAsynchronous() {
+        return asynchronous;
+    }
+
+    public void setAsynchronous(boolean asynchronous) {
+        this.asynchronous = asynchronous;
     }
 
     public String getVaadinVersion() {
@@ -42,19 +48,19 @@ public class WidgetSetInfo {
         this.addons = addons;
     }
 
-    /* Create the info */
-    static public WidgetSetInfo create(String vaadinVersion, AddonInfo... addonInfos) {
-        WidgetSetInfo info = new WidgetSetInfo();
+    /* Create a new info. */
+    static public WidgetSetRequest create(String vaadinVersion, AddonInfo... addonInfos) {
+        WidgetSetRequest info = new WidgetSetRequest();
         info.setVaadinVersion(vaadinVersion);
         info.setAddons(Arrays.asList(addonInfos));
         return info;
     }
 
-    public WidgetSetInfo eager(Class<? extends Component> componentClass) {
+    public WidgetSetRequest eager(Class<? extends Component> componentClass) {
         return eager(componentClass.getCanonicalName());
     }
 
-    public WidgetSetInfo eager(String componentFqn) {
+    public WidgetSetRequest eager(String componentFqn) {
         if (eager == null) {
             eager = new ArrayList<>();
         }
@@ -62,7 +68,7 @@ public class WidgetSetInfo {
         return this;
     }
 
-    public WidgetSetInfo addon(AddonInfo addonInfo) {
+    public WidgetSetRequest addon(AddonInfo addonInfo) {
         if (addons == null) {
             addons = new ArrayList<>();
         }
@@ -70,8 +76,18 @@ public class WidgetSetInfo {
         return this;
     }
 
-    public WidgetSetInfo addon(String groupId, String artifactId, String version) {
+    public WidgetSetRequest addon(String groupId, String artifactId, String version) {
         return addon(new AddonInfo(groupId, artifactId, version));
     }
 
+    @Override
+    public String toString() {
+        return "WidgetSetRequest{" + "asynchronous=" + asynchronous + ", vaadinVersion=" + vaadinVersion + ", eager=" + eager + ", addons=" + addons + '}';
+    }
+
+    /* Unique and human-readable string defining the widgetset. */
+    public String toWidgetsetString() {
+        return "{vaadinVersion=" + vaadinVersion + ", eager=" + eager + ", addons=" + addons + '}';
+    }
+    
 }

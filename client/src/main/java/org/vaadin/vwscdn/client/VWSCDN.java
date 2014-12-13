@@ -37,7 +37,7 @@ class VWSCDN {
         this.service = service;
     }
 
-    public void useRemoteWidgetset(WidgetSetInfo info) {
+    public void useRemoteWidgetset(WidgetSetRequest info) {
         // Take the Vaadin version
         info.setVaadinVersion(Version.getFullVersion());
 
@@ -49,7 +49,7 @@ class VWSCDN {
 
     }
 
-    public WidgetSetResponse getRemoteWidgetSet(WidgetSetInfo info) {
+    public WidgetSetResponse getRemoteWidgetSet(WidgetSetRequest info) {
         try {
             return target
                     .request(MediaType.APPLICATION_JSON)

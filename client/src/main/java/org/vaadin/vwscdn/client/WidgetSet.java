@@ -9,7 +9,7 @@ import com.vaadin.ui.Component;
 public class WidgetSet {
 
     private final VWSCDN vwscdn;
-    private final WidgetSetInfo ws;
+    private final WidgetSetRequest ws;
 
     public static WidgetSet create() {
         return new WidgetSet((VaadinServletService) VaadinServletService.getCurrent());
@@ -25,7 +25,7 @@ public class WidgetSet {
 
     private WidgetSet(VaadinServletService service, String serviceUrl) {
         this.vwscdn = new VWSCDN(service, serviceUrl);
-        this.ws = new WidgetSetInfo();
+        this.ws = new WidgetSetRequest();
     }
 
     public WidgetSet eager(Class<? extends Component> componentClass) {
