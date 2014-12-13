@@ -16,6 +16,8 @@ package org.vaadin.vwscdn;
  * limitations under the License.
  */
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -33,12 +35,11 @@ import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.project.MavenProject;
 
 /**
- * Updates Vaadin widgetsets based on other widgetset packages on the classpath.
- * It is assumed that the project does not directly contain other GWT modules.
+ * Generates necessary VWSCDN client code.
  *
  * @goal generate
  * @requiresDependencyResolution compile
- * @phase process-classes
+ * @phase generate-sources
  */
 public class VWSCDNMojo
         extends AbstractMojo {
@@ -52,10 +53,26 @@ public class VWSCDNMojo
      */
     private MavenProject project;
 
+    /**
+     * Output directory for generated source files.
+     *
+     * @parameter
+     * expression="${project.build.directory}/generated-sources/vwscdn"
+     */
+    private File outputDirectory;
+
     public void execute()
             throws MojoExecutionException {
 
-        try {
+        String className = "MyWidgetSetService";
+
+        // Use same package as Maven plugin
+        File packageDirectory = new File(outputDirectory,
+                VWSCDNMojo.class.getPackage().getName().replace(".", "/"));
+        packageDirectory.mkdirs();
+        File outputFile = new File(packageDirectory, className + ".java");
+
+        try (FileWriter out = new FileWriter(outputFile)) {
             List cp = project.getCompileClasspathElements();
             Map<String, URL> urls = new HashMap<>();
             for (Object object : cp) {
@@ -66,14 +83,13 @@ public class VWSCDNMojo
                     .getAvailableWidgetSets(urls);
             Set<Artifact> artifacts = project.getArtifacts();
 
-            System.out.println(
-                    "@WebServlet(value = {\"/*\"}, asyncSupported = true)\n"
-                    + "@VaadinServletConfiguration(productionMode = false, ui = HelloWorldUI.class)\n"
-                    + "public static class Servlet extends VaadinServlet {\n"
+            out.write("package " + VWSCDNMojo.class.getPackage().getName() + ";\n");
+            out.write("import org.vaadin.vwscdn.client.WidgetSet;\n");
+            out.write("import org.vaadin.vwscdn.client.DefaultWidgetSetService;\n");
+            out.write("public class " + className + " extends DefaultWidgetSetService {\n"
                     + "\n"
                     + "    @Override\n"
-                    + "    protected void servletInitialized() throws ServletException {\n"
-                    + "        super.servletInitialized();\n");
+                    + "    public WidgetSet create() { \n");
             Set<Artifact> requiredArtifacts = new HashSet<>();
             for (String name : availableWidgetSets.keySet()) {
                 URL url = availableWidgetSets.get(name);
@@ -86,25 +102,25 @@ public class VWSCDNMojo
                 }
             }
 
-            System.out.println(""
-                    + "        // Intialize the widgetset. This might take a while at first run.\n"
-                    + "        WidgetSet.create()");
+            out.write("        return WidgetSet.create()");
             for (Artifact a : requiredArtifacts) {
                 String aid = a.getArtifactId();
                 String gid = a.getGroupId();
                 String v = a.getBaseVersion();
-                System.out.print(
-                        "            .addon(\"" + gid + "\", \"" + aid + "\", \"" + v + "\")\n");
+                out.write("\n            .addon(\""
+                        + gid + "\", \"" + aid + "\", \"" + v + "\")");
             }
-            System.out.println(""
-                    + "            .init();\n\n"
-                    + "    }\n"
-                    + "}"
-            );
+            out.write(";\n"
+                    + "    }\n");
+            out.write("}\n");
 
+            System.out.println(requiredArtifacts.size() + " addons widget set found.");
+            System.out.println("Widget Set created to " + outputFile.getAbsolutePath() + ".");
         } catch (DependencyResolutionRequiredException | MalformedURLException ex) {
             Logger.getLogger(VWSCDNMojo.class.getName()).log(Level.SEVERE, null,
                     ex);
+        } catch (IOException ex) {
+            Logger.getLogger(VWSCDNMojo.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }

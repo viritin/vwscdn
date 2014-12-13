@@ -23,7 +23,7 @@ class VWSCDN {
     public static final String COMPILE_SERVICE_URL_LOCAL = "http://localhost:8080/vwscdn";
     public static final String PARAM_VWSCDN_LOCAL = "vwscdn.local";
 
-    private static String getDefaultServiceUrl() {
+    public static String getDefaultServiceUrl() {
         return System.getProperty(PARAM_VWSCDN_LOCAL) != null ? COMPILE_SERVICE_URL_LOCAL : COMPILE_SERVICE_URL;
     }
 

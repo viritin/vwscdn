@@ -9,21 +9,11 @@ import java.util.TreeSet;
 
 public class WidgetSetRequest {
 
-    boolean asynchronous = false;
-
     String vaadinVersion;
     List<String> eager;
     List<AddonInfo> addons;
 
     public WidgetSetRequest() {
-    }
-
-    public boolean isAsynchronous() {
-        return asynchronous;
-    }
-
-    public void setAsynchronous(boolean asynchronous) {
-        this.asynchronous = asynchronous;
     }
 
     public String getVaadinVersion() {
@@ -84,7 +74,7 @@ public class WidgetSetRequest {
 
     @Override
     public String toString() {
-        return "WidgetSetRequest{" + "asynchronous=" + asynchronous + ", vaadinVersion=" + vaadinVersion + ", eager=" + eager + ", addons=" + addons + '}';
+        return "WidgetSetRequest{" + ", vaadinVersion=" + vaadinVersion + ", eager=" + eager + ", addons=" + addons + '}';
     }
 
     /* Unique and human-readable string defining the widgetset. */

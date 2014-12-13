@@ -16,7 +16,8 @@ import com.vaadin.addon.charts.model.ChartType;
 import com.vaadin.addon.charts.model.DataSeries;
 import org.vaadin.addons.idle.Idle;
 import org.vaadin.virkki.paperstack.PaperStack;
-import org.vaadin.vwscdn.client.WidgetSet;
+import org.vaadin.vwscdn.MyWidgetSetService;
+import org.vaadin.vwscdn.client.WidgetSetService;
 
 @Theme("valo")
 @SuppressWarnings("serial")
@@ -29,16 +30,12 @@ public class HelloWorldUI extends UI {
     @VaadinServletConfiguration(productionMode = false, ui = HelloWorldUI.class)
     public static class Servlet extends VaadinServlet {
 
+        WidgetSetService wsService = new MyWidgetSetService();
+
         @Override
         protected void servletInitialized() throws ServletException {
             super.servletInitialized();
-
-            // Intialize the widgetset. This might take a while at first run.
-            WidgetSet.create()
-                    .addon("org.vaadin.virkki", "paperstack", "2.0.0")
-                    .addon("com.vaadin.addon", "vaadin-charts", "1.1.7")
-                    .eager(Label.class)
-                    .init();
+            wsService.init();
         }
     }
 
