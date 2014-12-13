@@ -8,7 +8,6 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import javax.servlet.ServletException;
@@ -38,6 +37,7 @@ public class HelloWorldUI extends UI {
             WidgetSet.create()
                     .addon("org.vaadin.virkki", "paperstack", "2.0.0")
                     .addon("com.vaadin.addon", "vaadin-charts", "1.1.7")
+                    .eager(Label.class)
                     .init();
         }
     }

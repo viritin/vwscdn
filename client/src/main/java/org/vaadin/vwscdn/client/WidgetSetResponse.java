@@ -2,6 +2,8 @@ package org.vaadin.vwscdn.client;
 
 public class WidgetSetResponse {
 
+    private PublishStatus widgetSetStatus = PublishStatus.UNKNOWN;
+
     private String widgetSetName;
     private String widgetSetUrl;
 
@@ -21,4 +23,11 @@ public class WidgetSetResponse {
         this.widgetSetUrl = widgetSetUrl;
     }
 
+    public PublishStatus getStatus() {
+        return widgetSetStatus;
+    }
+
+    public void setStatus(PublishStatus status) {
+        this.widgetSetStatus = status;
+    }
 }

@@ -87,14 +87,15 @@ class VWSCDN {
                 @Override
                 public void modifyBootstrapPage(BootstrapPageResponse response) {
                     // Update the bootstrap page
-                    Document document = response.getDocument();
-                    Element scriptTag = document.getElementsByTag("script").last();
-                    String script = scriptTag.html();
-                    scriptTag.html("");
-                    script = script.replaceAll("\"widgetset\": \".*\"", "\"widgetset\": \"" + ws.getWidgetSetName() + "\"");
-                    script = script.replace("});", ",\"widgetsetUrl\":\"" + ws.getWidgetSetUrl() + "\"});");
-                    scriptTag.appendChild(new DataNode(script, scriptTag.baseUri()));
-
+                    if (ws != null && ws.getStatus() == PublishStatus.AVAILABLE) {
+                        Document document = response.getDocument();
+                        Element scriptTag = document.getElementsByTag("script").last();
+                        String script = scriptTag.html();
+                        scriptTag.html("");
+                        script = script.replaceAll("\"widgetset\": \".*\"", "\"widgetset\": \"" + ws.getWidgetSetName() + "\"");
+                        script = script.replace("});", ",\"widgetsetUrl\":\"" + ws.getWidgetSetUrl() + "\"});");
+                        scriptTag.appendChild(new DataNode(script, scriptTag.baseUri()));
+                    }
                 }
             });
         }

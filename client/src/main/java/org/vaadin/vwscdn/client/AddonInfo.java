@@ -43,12 +43,11 @@ public class AddonInfo {
     }
 
     @XmlTransient
-    public String getFullMavenId() {
+    public String toFullMavenId() {
         return groupId + "." + artifactId + "-" + version;
     }
 
-    @XmlTransient
-    public String getMavenPomSnippet() {
+    public String toMavenPomSnippet() {
         StringBuilder b = new StringBuilder();
         b.append("<dependency><groupId>");
         b.append(getGroupId());
