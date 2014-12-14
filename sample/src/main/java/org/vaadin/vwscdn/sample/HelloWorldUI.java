@@ -30,14 +30,18 @@ public class HelloWorldUI extends UI {
     public static class Servlet extends VaadinServlet {
 
         // TODO: It should be possible to inject this.
-        // And also possible to specify DEFAULT, MANUAL or GENERATED version
+        // And also possible to choose DEFAULT, MANUAL or GENERATED version
         // using the org.vaadin.vwscdn.annotations.WidgetSetType
+        
         
         // This is automatically generated widgetset
         WidgetSetConfiguration ws = new org.vaadin.vwscdn.GeneratedWidgetSet();
         
-        // This is a manually created widgetset:
+        // This is a manually created/edited widgetset:
         // WidgetSetConfiguration ws = new MyWidgetSet();
+
+        // This is the default widgetset without any addons:
+        // WidgetSetConfiguration ws = new org.vaadin.vwscdn.client.DefaultWidgetSet();
 
         @Override
         protected void servletInitialized() throws ServletException {
