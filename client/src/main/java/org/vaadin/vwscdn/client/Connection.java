@@ -17,7 +17,7 @@ import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-class VWSCDN {
+class Connection {
 
     public static final String COMPILE_SERVICE_URL = "http://sami.app.fi/rws";
     public static final String COMPILE_SERVICE_URL_LOCAL = "http://localhost:8080/vwscdn";
@@ -31,11 +31,11 @@ class VWSCDN {
     private WebTarget target;
     private final VaadinService service;
 
-    public VWSCDN(VaadinService service) {
+    public Connection(VaadinService service) {
         this(service, getDefaultServiceUrl());
     }
 
-    public VWSCDN(VaadinService service, String vwscdnUrl) {
+    public Connection(VaadinService service, String vwscdnUrl) {
         vwscdnUrl = vwscdnUrl == null ? getDefaultServiceUrl() : vwscdnUrl;
         this.client = ClientBuilder.newClient();
         vwscdnUrl = vwscdnUrl.endsWith("/") ? vwscdnUrl : vwscdnUrl + "/";
@@ -43,7 +43,7 @@ class VWSCDN {
         this.service = service;
     }
 
-    public void useRemoteWidgetset(WidgetSetRequest info) {
+    public WidgetSetResponse useRemoteWidgetset(WidgetSetRequest info) {
         // Take the Vaadin version
         info.setVaadinVersion(Version.getFullVersion());
 
@@ -51,7 +51,9 @@ class VWSCDN {
         WidgetSetResponse ws = getRemoteWidgetSet(info);
 
         // Rewrite the bootstrap            
-        service.addSessionInitListener(new VWSCDN.SessionInitListener(ws));
+        service.addSessionInitListener(new Connection.SessionInitListener(ws));
+        
+        return ws;
 
     }
 
@@ -62,7 +64,7 @@ class VWSCDN {
                     .post(Entity.json(info), WidgetSetResponse.class);
 
         } catch (javax.ws.rs.NotFoundException ex) {
-            Logger.getLogger(VWSCDN.class.getName()).log(Level.SEVERE, "Failed to connect service " + target.getUri() + "", ex);
+            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, "Failed to connect service " + target.getUri() + "", ex);
         }
         return null;
     }

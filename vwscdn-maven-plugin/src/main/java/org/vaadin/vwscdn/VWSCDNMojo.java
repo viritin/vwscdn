@@ -64,7 +64,7 @@ public class VWSCDNMojo
     public void execute()
             throws MojoExecutionException {
 
-        String className = "MyWidgetSetService";
+        String className = "GeneratedWidgetSet";
 
         // Use same package as Maven plugin
         File packageDirectory = new File(outputDirectory,
@@ -83,13 +83,16 @@ public class VWSCDNMojo
                     .getAvailableWidgetSets(urls);
             Set<Artifact> artifacts = project.getArtifacts();
 
-            out.write("package " + VWSCDNMojo.class.getPackage().getName() + ";\n");
-            out.write("import org.vaadin.vwscdn.client.WidgetSet;\n");
-            out.write("import org.vaadin.vwscdn.client.DefaultWidgetSetService;\n");
-            out.write("public class " + className + " extends DefaultWidgetSetService {\n"
+            out.write("package " + VWSCDNMojo.class.getPackage().getName() + ";\n\n");
+            out.write("import org.vaadin.vwscdn.client.DefaultWidgetSet;\n");
+            out.write("import org.vaadin.vwscdn.annotations.WidgetSet;\n");
+            out.write("import static org.vaadin.vwscdn.annotations.WidgetSetType.GENERATED;\n");
+            out.write("\n");
+            out.write("@WidgetSet(GENERATED)\n");
+            out.write("public class " + className + " extends DefaultWidgetSet {\n"
                     + "\n"
-                    + "    @Override\n"
-                    + "    public WidgetSet create() { \n");
+                    + "    public "+className+"() { \n"
+                    + "        super(); \n");
             Set<Artifact> requiredArtifacts = new HashSet<>();
             for (String name : availableWidgetSets.keySet()) {
                 URL url = availableWidgetSets.get(name);
@@ -101,16 +104,14 @@ public class VWSCDNMojo
                     }
                 }
             }
-
-            out.write("        return WidgetSet.create()");
             for (Artifact a : requiredArtifacts) {
                 String aid = a.getArtifactId();
                 String gid = a.getGroupId();
                 String v = a.getBaseVersion();
-                out.write("\n            .addon(\""
-                        + gid + "\", \"" + aid + "\", \"" + v + "\")");
+                out.write("\n        addon(\""
+                        + gid + "\", \"" + aid + "\", \"" + v + "\");");
             }
-            out.write(";\n"
+            out.write("\n"
                     + "    }\n");
             out.write("}\n");
 

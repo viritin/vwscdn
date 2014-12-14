@@ -16,8 +16,7 @@ import com.vaadin.addon.charts.model.ChartType;
 import com.vaadin.addon.charts.model.DataSeries;
 import org.vaadin.addons.idle.Idle;
 import org.vaadin.virkki.paperstack.PaperStack;
-import org.vaadin.vwscdn.MyWidgetSetService;
-import org.vaadin.vwscdn.client.WidgetSetService;
+import org.vaadin.vwscdn.client.WidgetSetConfiguration;
 
 @Theme("valo")
 @SuppressWarnings("serial")
@@ -30,12 +29,20 @@ public class HelloWorldUI extends UI {
     @VaadinServletConfiguration(productionMode = false, ui = HelloWorldUI.class)
     public static class Servlet extends VaadinServlet {
 
-        WidgetSetService wsService = new CustomWidgetSetService();
+        // TODO: It should be possible to inject this.
+        // And also possible to specify DEFAULT, MANUAL or GENERATED version
+        // using the org.vaadin.vwscdn.annotations.WidgetSetType
+        
+        // This is automatically generated widgetset
+        WidgetSetConfiguration ws = new org.vaadin.vwscdn.GeneratedWidgetSet();
+        
+        // This is a manually created widgetset:
+        // WidgetSetConfiguration ws = new MyWidgetSet();
 
         @Override
         protected void servletInitialized() throws ServletException {
             super.servletInitialized();
-            wsService.init();
+            ws.init();
         }
     }
 
