@@ -144,4 +144,14 @@ First, install the maven plugin to your project:
 If you want to run generation of org.vaadin.vwscdn.GeneratedWidgetSet.java by hand you can use the following command:
 
      mvn -e vwscdn:generate
-     
+
+Online status
+---
+
+The status of online published widget sets can be seen at:
+[sami.app.fi/rws/api/compiler/status](http://sami.app.fi/rws/api/compiler/status)
+
+Individual widgetset content / status can is visible through:
+     sami.app.fi/rws/api/compiler/ws/<WIDGETSET_ID>
+    
+For example, the default widget set status [is visible here](http://sami.app.fi/rws/api/compiler/ws/vwscdnfac2b5204c77574f464e00e56dbb0a0f).
