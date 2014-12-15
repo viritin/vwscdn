@@ -34,8 +34,8 @@ public class HelloWorldUI extends UI {
         // using the org.vaadin.vwscdn.annotations.WidgetSetType
         
         
-        // This is automatically generated widgetset
-        WidgetSetConfiguration ws = new org.vaadin.vwscdn.GeneratedWidgetSet();
+        // This is automatically generated widgetset, it is automatically registered as well
+        // WidgetSetConfiguration ws = new org.vaadin.vwscdn.GeneratedWidgetSet();
         
         // This is a manually created/edited widgetset:
         // WidgetSetConfiguration ws = new MyWidgetSet();
@@ -46,7 +46,9 @@ public class HelloWorldUI extends UI {
         @Override
         protected void servletInitialized() throws ServletException {
             super.servletInitialized();
-            ws.init();
+            // If you have manually defined widgetset 
+            // TODO Maybe you'd want to use the weblistener there as well??
+            // ws.init();
         }
     }
 

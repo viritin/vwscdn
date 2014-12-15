@@ -83,15 +83,21 @@ public class VWSCDNMojo
                     .getAvailableWidgetSets(urls);
             Set<Artifact> artifacts = project.getArtifacts();
 
-            out.write("package " + VWSCDNMojo.class.getPackage().getName() + ";\n\n");
+            out.write(
+                    "package " + VWSCDNMojo.class.getPackage().getName() + ";\n\n");
             out.write("import org.vaadin.vwscdn.client.DefaultWidgetSet;\n");
-            out.write("import org.vaadin.vwscdn.annotations.WidgetSet;\n");
-            out.write("import static org.vaadin.vwscdn.annotations.WidgetSetType.GENERATED;\n");
-            out.write("\n");
+            out.write("import org.vaadin.vwscdn.annotations.WidgetSet;\n"
+                    + "import javax.servlet.annotation.WebListener;\n"
+                    + "import javax.servlet.http.HttpSessionEvent;\n");
+            out.write(
+                    "import static org.vaadin.vwscdn.annotations.WidgetSetType.GENERATED;\n");
+            out.write("\n@WebListener\n");
             out.write("@WidgetSet(GENERATED)\n");
-            out.write("public class " + className + " extends DefaultWidgetSet {\n"
+            out.write(
+                    "public class " + className + " extends DefaultWidgetSet implements javax.servlet.http.HttpSessionListener {\n"
+                    + "    private boolean inited = false;\n"
                     + "\n"
-                    + "    public "+className+"() { \n"
+                    + "    public " + className + "() { \n"
                     + "        super(); \n");
             Set<Artifact> requiredArtifacts = new HashSet<>();
             for (String name : availableWidgetSets.keySet()) {
@@ -99,7 +105,8 @@ public class VWSCDNMojo
                 for (Artifact a : artifacts) {
                     String u = url.toExternalForm();
                     if (u.contains(a.getArtifactId())
-                            && u.contains(a.getBaseVersion()) && !u.contains("vaadin-client")) {
+                            && u.contains(a.getBaseVersion()) && !u.contains(
+                                    "vaadin-client")) {
                         requiredArtifacts.add(a);
                     }
                 }
@@ -113,15 +120,31 @@ public class VWSCDNMojo
             }
             out.write("\n"
                     + "    }\n");
+            out.write("\n    @Override\n"
+                    + "    public void sessionCreated(HttpSessionEvent se) {\n"
+                    + "        if(!inited) {\n"
+                    + "            init();\n"
+                    + "            inited = true;\n"
+                    + "        }\n"
+                    + "    }\n"
+                    + "\n"
+                    + "    @Override\n"
+                    + "    public void sessionDestroyed(HttpSessionEvent se) {\n"
+                    + "    }\n"
+                    + "");
+
             out.write("}\n");
 
-            System.out.println(requiredArtifacts.size() + " addons widget set found.");
-            System.out.println("Widget Set created to " + outputFile.getAbsolutePath() + ".");
+            System.out.println(
+                    requiredArtifacts.size() + " addons widget set found.");
+            System.out.println("Widget Set created to " + outputFile.
+                    getAbsolutePath() + ".");
         } catch (DependencyResolutionRequiredException | MalformedURLException ex) {
             Logger.getLogger(VWSCDNMojo.class.getName()).log(Level.SEVERE, null,
                     ex);
         } catch (IOException ex) {
-            Logger.getLogger(VWSCDNMojo.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(VWSCDNMojo.class.getName()).log(Level.SEVERE, null,
+                    ex);
         }
 
     }
