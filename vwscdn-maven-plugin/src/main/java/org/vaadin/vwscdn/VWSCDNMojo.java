@@ -134,11 +134,13 @@ public class VWSCDNMojo
                     + "");
 
             out.write("}\n");
-
+            
             System.out.println(
                     requiredArtifacts.size() + " addons widget set found.");
             System.out.println("Widget Set created to " + outputFile.
                     getAbsolutePath() + ".");
+            
+            project.addCompileSourceRoot("target/generated-sources/vwscdn");
         } catch (DependencyResolutionRequiredException | MalformedURLException ex) {
             Logger.getLogger(VWSCDNMojo.class.getName()).log(Level.SEVERE, null,
                     ex);
