@@ -16,6 +16,6 @@ public class MyWidgetSet extends DefaultWidgetSet {
         eager(TextField.class);
         addon("org.vaadin.virkki", "paperstack", "2.0.0");
         addon("com.vaadin.addon", "vaadin-charts", "1.1.7");
-
-    }
+        addon("org.vaadin.addon","confirmdialog", "2.1.2");
+        }
 }

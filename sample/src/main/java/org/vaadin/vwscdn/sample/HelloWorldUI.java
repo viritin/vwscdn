@@ -16,6 +16,7 @@ import com.vaadin.addon.charts.model.ChartType;
 import com.vaadin.addon.charts.model.DataSeries;
 import org.vaadin.addons.idle.Idle;
 import org.vaadin.virkki.paperstack.PaperStack;
+import org.vaadin.vwscdn.client.WidgetSetConfiguration;
 
 @Theme("valo")
 @SuppressWarnings("serial")
@@ -26,24 +27,17 @@ public class HelloWorldUI extends UI {
 
     @WebServlet(value = {"/*"}, asyncSupported = true)
     @VaadinServletConfiguration(productionMode = false, ui = HelloWorldUI.class)
-    public static class Servlet extends VaadinServlet {        
-        
-        // This is the generated widgetset, it is automatically registered as well
-        // WidgetSetConfiguration ws = new org.vaadin.vwscdn.GeneratedWidgetSet();
-        
-        // This is a manually created/edited widgetset.
-        // WidgetSetConfiguration ws = new MyWidgetSet();
+    public static class Servlet extends VaadinServlet {    
 
-        // This is the default widgetset without any addons:
-        // WidgetSetConfiguration ws = new org.vaadin.vwscdn.client.DefaultWidgetSet();
-
+        WidgetSetConfiguration ws = new MyWidgetSet();
+        
         @Override
         protected void servletInitialized() throws ServletException {
-            super.servletInitialized();
-            // If you have manually defined widgetset 
-            // TODO Maybe you'd want to use the weblistener there as well??
-            // ws.init();
+            super.servletInitialized();            
+            ws.init();
         }
+        
+
     }
 
     @Override
