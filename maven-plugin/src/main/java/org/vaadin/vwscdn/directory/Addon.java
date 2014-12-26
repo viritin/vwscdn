@@ -1,100 +1,126 @@
 package org.vaadin.vwscdn.directory;
 
-import java.util.Map;
+import java.util.Date;
+import java.util.List;
 import javax.annotation.Generated;
 
 @Generated("org.jsonschema2pojo")
 public class Addon {
 
+    /* basic */
     private String avgRating;
     private String linkUrl;
     private String name;
     private String proAccount;
     private String summary;
 
-    /**
-     *
-     * @return The avgRating
-     */
+    /* details */
+    private String groupId;
+    private String artifactId;
+    private String version;
+    private List<License> licenses;
+    private String maturity;
+    private Date oldestRelease;
+    private Date released;
+
+    
+    public Addon() {        
+    }
+    
     public String getAvgRating() {
         return avgRating;
     }
 
-    /**
-     *
-     * @param avgRating The avgRating
-     */
     public void setAvgRating(String avgRating) {
         this.avgRating = avgRating;
     }
 
-    /**
-     *
-     * @return The linkUrl
-     */
     public String getLinkUrl() {
         return linkUrl;
     }
 
-    /**
-     *
-     * @param linkUrl The linkUrl
-     */
     public void setLinkUrl(String linkUrl) {
         this.linkUrl = linkUrl;
     }
 
-    /**
-     *
-     * @return The name
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     *
-     * @param name The name
-     */
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-     *
-     * @return The proAccount
-     */
     public String getProAccount() {
         return proAccount;
     }
 
-    /**
-     *
-     * @param proAccount The proAccount
-     */
     public void setProAccount(String proAccount) {
         this.proAccount = proAccount;
     }
 
-    /**
-     *
-     * @return The summary
-     */
     public String getSummary() {
         return summary;
     }
 
-    /**
-     *
-     * @param summary The summary
-     */
     public void setSummary(String summary) {
         this.summary = summary;
     }
 
-    @Override
-    public String toString() {
-        return "Addon{" + "avgRating=" + avgRating + ", linkUrl=" + linkUrl + ", name=" + name + ", proAccount=" + proAccount + ", summary=" + summary + '}';
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
+
+    public String getArtifactId() {
+        return artifactId;
+    }
+
+    public void setArtifactId(String artifactId) {
+        this.artifactId = artifactId;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public List<License> getLicenses() {
+        return licenses;
+    }
+
+    public void setLicenses(List<License> licenses) {
+        this.licenses = licenses;
+    }
+
+    public String getMaturity() {
+        return maturity;
+    }
+
+    public void setMaturity(String maturity) {
+        this.maturity = maturity;
+    }
+
+    public Date getOldestRelease() {
+        return oldestRelease;
+    }
+
+    public void setOldestRelease(Date oldestRelease) {
+        this.oldestRelease = oldestRelease;
+    }
+
+    public Date getReleased() {
+        return released;
+    }
+
+    public void setReleased(Date released) {
+        this.released = released;
     }
 
 }

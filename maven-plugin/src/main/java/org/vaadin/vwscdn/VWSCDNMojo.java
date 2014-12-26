@@ -32,33 +32,32 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 
 /**
  * Generates necessary VWSCDN client code.
  *
- * @goal generate
- * @requiresDependencyResolution compile
- * @phase generate-sources
  */
+@Mojo(name = "generate", defaultPhase = LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution = ResolutionScope.COMPILE)
 public class VWSCDNMojo
         extends AbstractMojo {
 
     /**
      * The maven project descriptor
      *
-     * @parameter expression="${project}"
-     * @required
-     * @readonly
      */
+    @Parameter(property = "project", defaultValue = "${project}", required = true, readonly = true)
     private MavenProject project;
 
     /**
      * Output directory for generated source files.
      *
-     * @parameter
-     * expression="${project.build.directory}/generated-sources/vwscdn"
      */
+    @Parameter(property = "outputDirectory", defaultValue = "${project.build.directory}/generated-sources/vwscdn")
     private File outputDirectory;
 
     public void execute()
@@ -134,12 +133,12 @@ public class VWSCDNMojo
                     + "");
 
             out.write("}\n");
-            
+
             System.out.println(
                     requiredArtifacts.size() + " addons widget set found.");
             System.out.println("Widget Set created to " + outputFile.
                     getAbsolutePath() + ".");
-            
+
             project.addCompileSourceRoot("target/generated-sources/vwscdn");
         } catch (DependencyResolutionRequiredException | MalformedURLException ex) {
             Logger.getLogger(VWSCDNMojo.class.getName()).log(Level.SEVERE, null,
