@@ -29,7 +29,6 @@ public class DirectorySearchMojo extends AbstractMojo {
             throw new MojoFailureException("Missing search parameter.");
         }
         List<Addon> list = Directory.search("7", search);
-        boolean pomUpdated = false;
         Model model = project.getModel();
         for (Addon a : list) {
             System.out.println(a.getName() + " - " + a.getSummary());
@@ -38,17 +37,11 @@ public class DirectorySearchMojo extends AbstractMojo {
             if (PomUtils.findDependency(model, a.getGroupId(), a.getArtifactId()) != null) {
                 System.out.println(" (in pom.xml)");
             } else if (add) {
-                PomUtils.addOrReplaceDependency(model, a.getGroupId(), a.getArtifactId(), a.getVersion());
+                PomUtils.addDependency(model, a.getGroupId(), a.getArtifactId(), a.getVersion());
                 System.out.println(" (ADDED)");
-                pomUpdated=true;
             } else {
                 System.out.println(" (not present)");
             }
-        }
-        
-        // Save changes to pom.xml
-        if (pomUpdated) {
-            PomUtils.saveToProject(project, model);
         }
     }
 }
