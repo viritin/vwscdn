@@ -162,7 +162,7 @@ For example, the default widget set status [is visible here](http://sami.app.fi/
 Directory integration
 ---
 
-The Maven plugin supports searching and installing Vaadin add-ons from the Directory. to search for add-ons use the following:
+The Maven plugin supports searching and installing Vaadin add-ons from the Directory. To search for add-ons use the following:
 
      mvn vwscdn:dir -Dsearch=[search term]
 
@@ -170,7 +170,7 @@ And if you wish to add the matched add-ons to the project as a dependency, use `
 
      mvn vwscdn:dir -Dsearch=switch -Dadd
 
-Which adds the matching "Switch" component to your project pom.xml as dependency.
+Which adds the matching "Switch" component to your project pom.xml.
 
      [INFO] --- vwscdn-maven-plugin:3.0-SNAPSHOT:dir (default-cli) @ vwscdn-sample ---
      Switch - Switch is a decorated toggle checkbox.
