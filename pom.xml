@@ -15,10 +15,10 @@
     <modules>
         <module>client</module>
         <module>service</module>
-        <module>sample</module>
         <module>maven-plugin</module>
-        <module>stats</module>
         <module>archetype</module>
+        <module>sample</module>
+        <module>stats</module>
   </modules>
     
     <repositories>
