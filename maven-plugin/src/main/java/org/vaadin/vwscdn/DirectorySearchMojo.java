@@ -33,14 +33,19 @@ public class DirectorySearchMojo extends AbstractMojo {
         for (Addon a : list) {
             System.out.println(a.getName() + " - " + a.getSummary());
             System.out.println("\tRating: " + a.getAvgRating() + " / 5");
-            System.out.print("\tMaven: " + a.getGroupId() + ":" + a.getArtifactId() + ":" + a.getVersion());
+            if (a.getGroupId() == null || a.getArtifactId() == null) {
+                System.out.print("\tMaven: n/a");
+            } else {
+                System.out.print("\tMaven: " + a.getGroupId() + ":" + a.getArtifactId() + ":" + a.getVersion());
+            }
             if (PomUtils.findDependency(model, a.getGroupId(), a.getArtifactId()) != null) {
                 System.out.println(" (in pom.xml)");
-            } else if (add) {
+            } else if (add && a.getArtifactId() != null && a.getGroupId() != null) {
                 PomUtils.addDependency(model, a.getGroupId(), a.getArtifactId(), a.getVersion());
                 System.out.println(" (ADDED)");
-            } else {
+            } else if (a.getArtifactId() != null && a.getGroupId() != null) {
                 System.out.println(" (not present)");
+            } else {
             }
         }
     }

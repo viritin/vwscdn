@@ -71,6 +71,9 @@ public class PomUtils {
      * @return
      */
     public static Dependency findDependency(Model pomModel, String groupId, String artifactId) {
+        if (groupId == null || artifactId == null) {
+            return null;
+        }
         List<Dependency> deps = pomModel.getDependencies();
         for (Dependency dep : deps) {
             if (dep.getArtifactId().equals(artifactId) && dep.getGroupId().equals(groupId)) {
@@ -137,7 +140,7 @@ public class PomUtils {
 
         pom.rewind();
 
-        int i=0;
+        int i = 0;
         while (pom.hasNext()) {
             XMLEvent event = pom.nextEvent();
             if (event.isStartElement()) {
@@ -152,12 +155,12 @@ public class PomUtils {
                 if (matchScopeRegex.matcher(path).matches()) {
                     pom.mark(1);
                     if (pom.hasMark(0) && pom.hasMark(1)) {
-                        pom.replaceMark(1, "        <dependency><groupId>" 
-                                + groupId 
-                                + "</groupId><artifactId>" 
-                                + artifactId 
-                                + "</artifactId><version>" 
-                                + version 
+                        pom.replaceMark(1, "        <dependency><groupId>"
+                                + groupId
+                                + "</groupId><artifactId>"
+                                + artifactId
+                                + "</artifactId><version>"
+                                + version
                                 + "</version></dependency>\n\t</dependencies>");
                         return;
                     }
