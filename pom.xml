@@ -4,7 +4,7 @@
     <groupId>org.vaadin.vwscdn</groupId>
     <artifactId>vwscdn</artifactId>
     <packaging>pom</packaging>
-    <version>3.0-SNAPSHOT</version>
+    <version>4.0-SNAPSHOT</version>
     <name>vwscdn</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
