@@ -170,7 +170,7 @@ And if you wish to add the matched add-ons to the project as a dependency, use `
 
      mvn vwscdn:dir -Dsearch=switch -Dadd
 
-Which adds the "Switch" component to your project: 
+Which adds the matching "Switch" component to your project pom.xml as dependency.
 
      [INFO] --- vwscdn-maven-plugin:3.0-SNAPSHOT:dir (default-cli) @ vwscdn-sample ---
      Switch - Switch is a decorated toggle checkbox.
