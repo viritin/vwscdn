@@ -61,7 +61,7 @@ Add the following dependency to your maven pom.xml:
         <dependency>
             <groupId>org.vaadin.vwscdn</groupId>
             <artifactId>vwscdn-client</artifactId>
-            <version>3.0-SNAPSHOT</version>
+            <version>4.0-SNAPSHOT</version>
         </dependency>
 
 
@@ -158,3 +158,26 @@ Individual widgetset content / status can is visible through:
      sami.app.fi/rws/api/compiler/ws/<WIDGETSET_ID>
     
 For example, the default widget set status [is visible here](http://sami.app.fi/rws/api/compiler/ws/vwscdnfac2b5204c77574f464e00e56dbb0a0f).
+
+Directory integration
+---
+
+The Maven plugin supports searching and installing Vaadin add-ons from the Directory. To search for add-ons use the following:
+
+     mvn vwscdn:dir -Dsearch=[search term]
+
+And if you wish to add the matched add-ons to the project as a dependency, use `-Dadd` parameter. For example:
+
+     mvn vwscdn:dir -Dsearch=switch -Dadd
+
+Which adds the matching "Switch" component to your project pom.xml.
+
+     [INFO] --- vwscdn-maven-plugin:3.0-SNAPSHOT:dir (default-cli) @ vwscdn-sample ---
+     Switch - Switch is a decorated toggle checkbox.
+     	Rating: 4.9 / 5
+     	Maven: org.vaadin.teemu:switch:2.0.1 (ADDED)
+     [INFO] ------------------------------------------------------------------------
+     [INFO] BUILD SUCCESS
+     [INFO] ------------------------------------------------------------------------
+
+
