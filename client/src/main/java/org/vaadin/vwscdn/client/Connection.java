@@ -19,7 +19,7 @@ import org.jsoup.nodes.Element;
 
 class Connection {
 
-    public static final String COMPILE_SERVICE_URL = "http://sami.app.fi/rws";
+    public static final String COMPILE_SERVICE_URL = "http://78.47.36.150:8080/vwscdn";
     public static final String COMPILE_SERVICE_URL_LOCAL = "http://localhost:8080/vwscdn";
     public static final String PARAM_VWSCDN_LOCAL = "vwscdn.local";
 
