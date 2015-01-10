@@ -5,14 +5,14 @@
 
     <requiredProperties>
         <requiredProperty key="groupId">
-            <defaultValue>org.vaadin.vwscdn.sample</defaultValue>
+            <defaultValue>org.vaadin.sample</defaultValue>
         </requiredProperty>
         <requiredProperty key="artifactId"/>
         <requiredProperty key="version">
             <defaultValue>1.0-SNAPSHOT</defaultValue>
         </requiredProperty>
         <requiredProperty key="package">
-            <defaultValue>org.vaadin.vwscdn.sample</defaultValue>
+            <defaultValue>org.vaadin.sample</defaultValue>
         </requiredProperty>
     </requiredProperties>
 
