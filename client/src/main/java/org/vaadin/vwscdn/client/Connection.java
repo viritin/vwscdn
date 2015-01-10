@@ -63,7 +63,7 @@ class Connection {
                     .request(MediaType.APPLICATION_JSON)
                     .post(Entity.json(info), WidgetSetResponse.class);
 
-        } catch (javax.ws.rs.NotFoundException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, "Failed to connect service " + target.getUri() + "", ex);
         }
         return null;
