@@ -2,22 +2,34 @@
 Remote widget set compilation service
 ===
 
-This project consists of four parts:
- - Widgetset compiler service
- - Widgetset resource serving servlet
+This project consists of parts:
+ - Widgetset compiler service (+ servlet serving the compiled widgetsets)
  - Client library used in Vaadin application
- - Sample application
+ - Maven plugin that generates the widgetset configuration during project build
+ - Maven archetype for creating easily new projects using the service
+ - A sample application
  
-Running the project
+Creating a new project that uses the service
+---
+With the Maven archetype you can easily create a project setup that uses the central compilation service.
+
+    mvn archetype:generate -DarchetypeCatalog=local -DarchetypeGroupId=org.vaadin.vwscdn \
+    -DarchetypeArtifactId=vwscdn-archetype -DarchetypeVersion=4.0-SNAPSHOT
+
+This will prompt for project artifactId and groupId and generate a simple Vaadin application project.
+
+Running the sample project
 ---
 
-To run the sample and service at localhost use:
+To run the sample at localhost use:
 
+    cd sample
     mvn jetty:run
 
 Or, if you run the service locally also:
 
-    mvn -Dvwscdn.config=/path/to/working/directory/service-config.properties -Dvwscdn.local jetty:run
+    cd service
+    mvn -Dvwscdn.config=/path/to/working/directory/service-config.properties -Dvwscdn.local wildfly:run
 
 Service uses a working directory to build/publish widgetsets. By default it is the folder where the configuration 
 file is, but different folder can be also specified in the config file.
@@ -41,6 +53,7 @@ Configuration sample:
     compile.draft=false
     compile.localworkers=2
     compile.jvmargs=-Xmx512m
+    compile.debug
 
 
 The widgetset compiler service
