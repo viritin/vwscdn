@@ -7,9 +7,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import javax.inject.Qualifier;
 
-@Qualifier
 @Target({FIELD, TYPE, METHOD})
 @Retention(RUNTIME)
 public @interface WidgetSet {

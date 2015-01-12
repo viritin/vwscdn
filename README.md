@@ -77,6 +77,29 @@ Add the following dependency to your maven pom.xml:
             <version>4.0-SNAPSHOT</version>
         </dependency>
 
+The client also requires a jax-rs 2 implementation. Unless you are running in a modern Java EE 7 server, also provide e.g. resteasy like this
+
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-client</artifactId>
+            <version>3.0.10.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jaxrs</artifactId>
+            <version>3.0.10.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jaxb-provider</artifactId>
+            <version>3.0.10.Final</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jackson2-provider</artifactId>
+            <version>3.0.10.Final</version>
+        </dependency>
 
 To use in the application add the following to your application Servlet class. The MyWidgetSetService class is automatically generated during build.
 
@@ -115,7 +138,7 @@ First, install the maven plugin to your project:
             <plugin>
                 <groupId>org.vaadin.vwscdn</groupId>
                 <artifactId>vwscdn-maven-plugin</artifactId>
-                <version>3.0-SNAPSHOT</version>
+                <version>4.0-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <phase>generate-sources</phase>
@@ -125,34 +148,7 @@ First, install the maven plugin to your project:
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.9.1</version>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>${project.build.directory}/generated-sources/vwscdn</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>corg.vaadin.vwscdn</groupId>
-                    <artifactId>vwscdn-maven-plugin</artifactId>
-                    <version>2.0-SNAPSHOT</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
     </build>
     
 
