@@ -23,9 +23,9 @@
     <dependencies>
         
         <dependency>
-            <groupId>org.vaadin.vwscdn</groupId>
+            <groupId>in.virit.vwscdn</groupId>
             <artifactId>vwscdn-client</artifactId>
-            <version>4.0-SNAPSHOT</version>
+            <version>LATEST</version>
         </dependency>
 
         <dependency>
@@ -91,9 +91,9 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.vaadin.vwscdn</groupId>
+                <groupId>in.virit.vwscdn</groupId>
                 <artifactId>vwscdn-maven-plugin</artifactId>
-                <version>4.0-SNAPSHOT</version>
+                <version>LATEST</version>
                 <executions>
                     <execution>
                         <phase>generate-sources</phase>

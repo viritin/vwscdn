@@ -13,8 +13,8 @@ Creating a new project that uses the service
 ---
 With the Maven archetype you can easily create a project setup that uses the central compilation service.
 
-    mvn archetype:generate -DarchetypeCatalog=local -DarchetypeGroupId=org.vaadin.vwscdn \
-    -DarchetypeArtifactId=vwscdn-archetype -DarchetypeVersion=4.0-SNAPSHOT
+    mvn archetype:generate -DarchetypeCatalog=local -DarchetypeGroupId=in.virit.vwscdn \
+    -DarchetypeArtifactId=vwscdn-archetype -DarchetypeVersion=LATEST
 
 This will prompt for project artifactId and groupId and generate a simple Vaadin application project.
 
@@ -40,7 +40,7 @@ specify the installation in the configuration file.
 Configuration sample:
 
     # Optional. By default parent directory of this config file is used. 
-    # base.dir=/Users/se/rws
+    # base.dir=/Users/se/vwscdn
     
     # Optional. Public URL for the service. Used for URL generation.
     # By default the service context uri is used runtime.
@@ -72,9 +72,9 @@ Using the client
 Add the following dependency to your maven pom.xml:
 
         <dependency>
-            <groupId>org.vaadin.vwscdn</groupId>
+            <groupId>in.virit.vwscdn</groupId>
             <artifactId>vwscdn-client</artifactId>
-            <version>4.0-SNAPSHOT</version>
+            <version>LATEST</version>
         </dependency>
 
 The client also requires a jax-rs 2 implementation. Unless you are running in a modern Java EE 7 server, also provide e.g. resteasy like this
@@ -109,13 +109,13 @@ To use in the application add the following to your application Servlet class. T
     public static class Servlet extends VaadinServlet {
         
         // This is automatically generated widgetset
-        WidgetSetConfiguration ws = new org.vaadin.vwscdn.GeneratedWidgetSet();
+        WidgetSetConfiguration ws = new in.virit.vwscdn.GeneratedWidgetSet();
         
         // This is a manually created/edited widgetset:
         // WidgetSetConfiguration ws = new MyWidgetSet();
 
         // This is the default widgetset without any addons:
-        // WidgetSetConfiguration ws = new org.vaadin.vwscdn.client.DefaultWidgetSet();
+        // WidgetSetConfiguration ws = new in.virit.vwscdn.client.DefaultWidgetSet();
 
         @Override
         protected void servletInitialized() throws ServletException {
@@ -136,9 +136,9 @@ First, install the maven plugin to your project:
     <build>
         <plugins>
             <plugin>
-                <groupId>org.vaadin.vwscdn</groupId>
+                <groupId>in.virit.vwscdn</groupId>
                 <artifactId>vwscdn-maven-plugin</artifactId>
-                <version>4.0-SNAPSHOT</version>
+                <version>LATEST</version>
                 <executions>
                     <execution>
                         <phase>generate-sources</phase>
@@ -153,7 +153,7 @@ First, install the maven plugin to your project:
     
 
 
-If you want to run generation of org.vaadin.vwscdn.GeneratedWidgetSet.java by hand you can use the following command:
+If you want to run generation of in.virit.vwscdn.GeneratedWidgetSet.java by hand you can use the following command:
 
      mvn -e vwscdn:generate
 
@@ -161,12 +161,12 @@ Online status
 ---
 
 The status of online published widget sets can be seen at:
-[sami.app.fi/rws/api/compiler/status](http://sami.app.fi/rws/api/compiler/status)
+[cdn.virit.in/api/compiler/status](http://cdn.virit.in/api/compiler/status)
 
 Individual widgetset content / status can is visible through:
-     sami.app.fi/rws/api/compiler/ws/<WIDGETSET_ID>
+     cdn.virit.in/api/compiler/ws/<WIDGETSET_ID>
     
-For example, the default widget set status [is visible here](http://sami.app.fi/rws/api/compiler/ws/vwscdnfac2b5204c77574f464e00e56dbb0a0f).
+For example, the default widget set status [is visible here](http://cdn.virit.in/api/compiler/ws/vwscdnfac2b5204c77574f464e00e56dbb0a0f).
 
 Directory integration
 ---
