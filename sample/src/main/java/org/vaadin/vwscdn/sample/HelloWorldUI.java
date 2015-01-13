@@ -17,6 +17,8 @@ import com.vaadin.addon.charts.model.DataSeries;
 import org.vaadin.addons.idle.Idle;
 import org.vaadin.virkki.paperstack.PaperStack;
 import org.vaadin.vwscdn.client.WidgetSetConfiguration;
+import org.vaadin.teemu.ratingstars.RatingStars;
+import org.vaadin.teemu.switchui.Switch;
 
 @Theme("valo")
 @SuppressWarnings("serial")
@@ -34,7 +36,9 @@ public class HelloWorldUI extends UI {
         @Override
         protected void servletInitialized() throws ServletException {
             super.servletInitialized();            
-            ws.init();
+            // Uncooment this one to use your own MyWidgetSet
+            // ws.init();
+            
         }
         
 
@@ -67,6 +71,8 @@ public class HelloWorldUI extends UI {
         chart.getConfiguration().addSeries(new DataSeries(new String[]{"A", "B"}, new Number[]{1, 2, 3, 4}));
         stack.addComponent(chart);
         layout.addComponent(clickCounterLabel = new Label("Clicks: 0"));
+        layout.addComponent(new RatingStars());
+        layout.addComponent(new Switch("TEEM"));
     }
 
 }
