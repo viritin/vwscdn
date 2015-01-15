@@ -8,7 +8,7 @@
     <name>vwscdn</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vaadin.version>7.3.6</vaadin.version>
+        <vaadin.version>7.3.8</vaadin.version>
         <failOnMissingWebXml>false</failOnMissingWebXml>
         <jetty.port>8080</jetty.port>
         <wildfly.port>8081</wildfly.port>

@@ -17,6 +17,13 @@
             <version>${vaadin.version}</version>
             <scope>test</scope>
         </dependency>
+        
+        <dependency>
+            <groupId>in.virit.vwscdn</groupId>
+            <artifactId>vwscdn-client</artifactId>
+            <version>1.0.1-SNAPSHOT</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.apache.maven</groupId>
