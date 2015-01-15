@@ -13,7 +13,13 @@
         <jetty.port>8080</jetty.port>
         <wildfly.port>8081</wildfly.port>
     </properties>
-
+    
+    <scm>
+        <url>git://github.com/samie/rws.git</url>
+        <connection>scm:git:git://github.com/samie/rws.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:/samie/rws.git</developerConnection>
+    </scm>
+    
     <modules>
         <module>client</module>
         <module>service</module>
