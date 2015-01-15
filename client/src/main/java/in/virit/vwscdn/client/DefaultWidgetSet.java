@@ -35,7 +35,7 @@ public class DefaultWidgetSet implements WidgetSetConfiguration {
      */
     @Override
     public void init() {
-        init((VaadinServletService) VaadinServletService.getCurrent(), null);
+        init((String) null);
     }
 
     /**
@@ -43,12 +43,12 @@ public class DefaultWidgetSet implements WidgetSetConfiguration {
      */
     @Override
     public void init(String serviceUrl) {
-        init((VaadinServletService) VaadinServletService.getCurrent(), serviceUrl);
+        Connection vwscdn = new Connection(VaadinServletService.getCurrent(), serviceUrl);
+        vwscdn.useRemoteWidgetset(wsRequest);
     }
 
-    public void init(VaadinServletService service, String serviceUrl) {
-        Connection vwscdn = new Connection(service, serviceUrl);
-        vwscdn.useRemoteWidgetset(wsRequest);
+    public void initWithResponse(WidgetSetResponse ws) {
+        VaadinServletService.getCurrent().addSessionInitListener(new Connection.SessionInitListener(ws));
     }
 
     @Override

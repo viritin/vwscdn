@@ -17,11 +17,12 @@ import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-class Connection {
+public class Connection {
 
     public static final String COMPILE_SERVICE_URL = "http://cdn.virit.in";
     public static final String COMPILE_SERVICE_URL_LOCAL = "http://localhost:8080/vwscdn";
     public static final String PARAM_VWSCDN_LOCAL = "vwscdn.local";
+    public static final String QUERY_PARAM_ASYNC_COMPILE = "compile.async";
 
     public static String getDefaultServiceUrl() {
         return System.getProperty(PARAM_VWSCDN_LOCAL) != null ? COMPILE_SERVICE_URL_LOCAL : COMPILE_SERVICE_URL;
@@ -30,6 +31,10 @@ class Connection {
     private Client client;
     private WebTarget target;
     private final VaadinService service;
+
+    public Connection() {
+        this(null, getDefaultServiceUrl());
+    }
 
     public Connection(VaadinService service) {
         this(service, getDefaultServiceUrl());
@@ -44,24 +49,30 @@ class Connection {
     }
 
     public WidgetSetResponse useRemoteWidgetset(WidgetSetRequest info) {
+
+        //Sanity check
+        if (service == null) {
+            throw new IllegalArgumentException("VaadinService cannot be null when initializing remote widgetset.");
+        }
+
         // Take the Vaadin version
         info.setVaadinVersion(Version.getFullVersion());
 
         // Get remote widgetset
-        WidgetSetResponse ws = getRemoteWidgetSet(info);
+        WidgetSetResponse ws = getRemoteWidgetSet(info, false);
 
-        // Rewrite the bootstrap            
+        // Rewrite the bootstrap
         service.addSessionInitListener(new Connection.SessionInitListener(ws));
-        
+
         return ws;
 
     }
 
-    public WidgetSetResponse getRemoteWidgetSet(WidgetSetRequest info) {
+    public WidgetSetResponse getRemoteWidgetSet(WidgetSetRequest request, boolean asynchronous) {
         try {
-            return target
+            return target.queryParam(QUERY_PARAM_ASYNC_COMPILE, asynchronous)
                     .request(MediaType.APPLICATION_JSON)
-                    .post(Entity.json(info), WidgetSetResponse.class);
+                    .post(Entity.json(request), WidgetSetResponse.class);
 
         } catch (Exception ex) {
             Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, "Failed to connect service " + target.getUri() + "", ex);

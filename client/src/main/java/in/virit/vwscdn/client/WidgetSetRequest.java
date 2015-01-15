@@ -9,9 +9,14 @@ import java.util.TreeSet;
 
 public class WidgetSetRequest {
 
+    public static final String COMPILE_STYLE_OBFUSCATED = "OBF";
+    public static final String COMPILE_STYLE_PRETTY = "PRETTY";
+    public static final String COMPILE_STYLE_DETAILED = "DETAILED";
+
     String vaadinVersion;
     List<String> eager;
     List<AddonInfo> addons;
+    String compileStyle = COMPILE_STYLE_OBFUSCATED;
 
     public WidgetSetRequest() {
     }
@@ -40,12 +45,39 @@ public class WidgetSetRequest {
         this.addons = addons;
     }
 
-    /* Create a new info. */
-    static public WidgetSetRequest create(String vaadinVersion, AddonInfo... addonInfos) {
+    public String getCompileStyle() {
+        return compileStyle;
+    }
+
+    public void setCompileStyle(String compileStyle) {
+        this.compileStyle = compileStyle;
+    }
+
+    /**
+     * Create a new info.
+     *
+     * @param style
+     * @param vaadinVersion
+     * @param addonInfos
+     * @return
+     */
+    static public WidgetSetRequest create(String style, String vaadinVersion, AddonInfo... addonInfos) {
         WidgetSetRequest info = new WidgetSetRequest();
         info.setVaadinVersion(vaadinVersion);
+        info.setCompileStyle(style);
         info.setAddons(Arrays.asList(addonInfos));
         return info;
+    }
+
+    /**
+     * Create a new info.
+     *
+     * @param vaadinVersion
+     * @param addonInfos
+     * @return *
+     */
+    static public WidgetSetRequest create(String vaadinVersion, AddonInfo... addonInfos) {
+        return create(COMPILE_STYLE_OBFUSCATED, vaadinVersion, addonInfos);
     }
 
     public WidgetSetRequest eager(Class<? extends Component> componentClass) {
@@ -70,6 +102,16 @@ public class WidgetSetRequest {
 
     public WidgetSetRequest addon(String groupId, String artifactId, String version) {
         return addon(new AddonInfo(groupId, artifactId, version));
+    }
+
+    public WidgetSetRequest vaadin(String vaadinVersion) {
+        setVaadinVersion(vaadinVersion);
+        return this;
+    }
+
+    public WidgetSetRequest style(String compileStyle) {
+        setCompileStyle(compileStyle);
+        return this;
     }
 
     @Override
