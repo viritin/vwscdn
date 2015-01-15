@@ -1,7 +1,9 @@
 package in.virit.vwscdn.client;
 
+import com.vaadin.server.VaadinService;
 import in.virit.vwscdn.annotations.WidgetSet;
 import com.vaadin.server.VaadinServletService;
+import com.vaadin.shared.Version;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
 import in.virit.vwscdn.annotations.WidgetSetType;
@@ -44,16 +46,26 @@ public class DefaultWidgetSet implements WidgetSetConfiguration {
     @Override
     public void init(String serviceUrl) {
         Connection vwscdn = new Connection(VaadinServletService.getCurrent(), serviceUrl);
-        vwscdn.useRemoteWidgetset(wsRequest);
+        useRemoteWidgetset(VaadinServletService.getCurrent(), wsRequest, vwscdn);
     }
 
     public void initWithResponse(WidgetSetResponse ws) {
-        VaadinServletService.getCurrent().addSessionInitListener(new Connection.SessionInitListener(ws));
+        VaadinServletService.getCurrent().addSessionInitListener(new SessionInitListener(ws));
     }
 
     @Override
     public void init(UI ui) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private WidgetSetResponse useRemoteWidgetset(VaadinService service, WidgetSetRequest info, Connection connection) {
+        if (service == null) {
+            throw new IllegalArgumentException("VaadinService cannot be null when initializing remote widgetset.");
+        }
+        info.setVaadinVersion(Version.getFullVersion());
+        WidgetSetResponse ws = connection.queryRemoteWidgetSet(info, false);
+        service.addSessionInitListener(new SessionInitListener(ws));
+        return ws;
     }
 
 }
