@@ -14,10 +14,10 @@ import com.vaadin.ui.VerticalLayout;
 
 @Theme("valo")
 @SuppressWarnings("serial")
-public class HelloWorldUI extends UI {
+public class ApplicationUI extends UI {
 
     @WebServlet(value = {"/*"}, asyncSupported = true)
-    @VaadinServletConfiguration(productionMode = false, ui = HelloWorldUI.class)
+    @VaadinServletConfiguration(productionMode = false, ui = ApplicationUI.class)
     public static class Servlet extends VaadinServlet {    
     }
 
