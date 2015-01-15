@@ -41,6 +41,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.util.IOUtil;
 
 /**
  * Generates necessary VWSCDN client code.
@@ -139,69 +140,91 @@ public class VWSCDNMojo
             } else {
                 throw new MojoExecutionException("Remote widgetset compilation failed: " + (wsRes != null? wsRes.getStatus(): " (no response)"));
             }
-
-            out.write(
-                    "package " + VWSCDNMojo.class.getPackage().getName() + ";\n\n");
-
-            out.write("import in.virit.vwscdn.client.DefaultWidgetSet;\n");
-            out.write("import in.virit.vwscdn.client.PublishState;\n");
-            out.write("import in.virit.vwscdn.client.WidgetSetResponse;\n");
-            out.write("import in.virit.vwscdn.annotations.WidgetSet;\n"
-                    + "import javax.servlet.annotation.WebListener;\n"
-                    + "import javax.servlet.http.HttpSessionEvent;\n");
-            out.write(
-                    "import static in.virit.vwscdn.annotations.WidgetSetType.GENERATED;\n");
-
-            out.write("\n@WebListener\n");
-            out.write("@WidgetSet(GENERATED)\n");
-            out.write(
-                    "public class " + className + " extends DefaultWidgetSet implements javax.servlet.http.HttpSessionListener {\n"
-                    + "    private boolean inited = false;\n"
-                    + "\n");
-            if (wsName != null && wsUrl != null) {
-                out.write("    private WidgetSetResponse wsr = new WidgetSetResponse();\n");
-            } else {
-                out.write("    private WidgetSetResponse wsr = null;\n");
-            }
-            out.write("\n"
-                    + "    public " + className + "() { \n"
-                    + "        super(); \n");
-
+            
+            String listener = IOUtil.toString(getClass().getResourceAsStream("/weblistener.tmpl"));
+            listener = listener.replace("__wsUrl", wsUrl);
+            listener = listener.replace("__wsName", wsName);
+            
+            StringBuilder sb = new StringBuilder();
             for (AddonInfo a : wsReq.getAddons()) {
                 String aid = a.getArtifactId();
                 String gid = a.getGroupId();
                 String v = a.getVersion();
-                out.write("\n        addon(\""
-                        + gid + "\", \"" + aid + "\", \"" + v + "\");");
+                sb.append("// ");
+                sb.append(aid);
+                sb.append(":");
+                sb.append(gid);
+                sb.append(":");
+                sb.append(v);
+                sb.append("\n");
             }
 
-            if (wsName != null && wsUrl != null) {
-                // We assume the WS to be available by the time it is requested
-                out.write("\n        wsr.setStatus(PublishState.AVAILABLE);");
-                out.write("\n        wsr.setWidgetSetUrl(\"" + wsUrl + "\");");
-                out.write("\n        wsr.setWidgetSetName(\"" + wsName + "\");");
-            }
+            listener = listener.replace("__addons", sb.toString());
+            
+            out.write(listener);
 
-            out.write("\n"
-                    + "    }\n");
-            out.write("\n    @Override\n"
-                    + "    public void sessionCreated(HttpSessionEvent se) {\n"
-                    + "        if(!inited) {\n"
-                    + "            if(wsr == null) {\n"
-                    + "               init();\n"
-                    + "            } else {\n"
-                    + "               initWithResponse(wsr);\n"
-                    + "            }\n"
-                    + "            inited = true;\n"
-                    + "        }\n"
-                    + "    }\n"
-                    + "\n"
-                    + "    @Override\n"
-                    + "    public void sessionDestroyed(HttpSessionEvent se) {\n"
-                    + "    }\n"
-                    + "");
-
-            out.write("}\n");
+//            out.write(
+//                    "package " + VWSCDNMojo.class.getPackage().getName() + ";\n\n");
+//
+//            out.write("import in.virit.vwscdn.client.DefaultWidgetSet;\n");
+//            out.write("import in.virit.vwscdn.client.PublishState;\n");
+//            out.write("import in.virit.vwscdn.client.WidgetSetResponse;\n");
+//            out.write("import in.virit.vwscdn.annotations.WidgetSet;\n"
+//                    + "import javax.servlet.annotation.WebListener;\n"
+//                    + "import javax.servlet.http.HttpSessionEvent;\n");
+//            out.write(
+//                    "import static in.virit.vwscdn.annotations.WidgetSetType.GENERATED;\n");
+//
+//            out.write("\n@WebListener\n");
+//            out.write("@WidgetSet(GENERATED)\n");
+//            out.write(
+//                    "public class " + className + " extends DefaultWidgetSet implements javax.servlet.http.HttpSessionListener {\n"
+//                    + "    private boolean inited = false;\n"
+//                    + "\n");
+//            if (wsName != null && wsUrl != null) {
+//                out.write("    private WidgetSetResponse wsr = new WidgetSetResponse();\n");
+//            } else {
+//                out.write("    private WidgetSetResponse wsr = null;\n");
+//            }
+//            out.write("\n"
+//                    + "    public " + className + "() { \n"
+//                    + "        super(); \n");
+//
+//            for (AddonInfo a : wsReq.getAddons()) {
+//                String aid = a.getArtifactId();
+//                String gid = a.getGroupId();
+//                String v = a.getVersion();
+//                out.write("\n        addon(\""
+//                        + gid + "\", \"" + aid + "\", \"" + v + "\");");
+//            }
+//
+//            if (wsName != null && wsUrl != null) {
+//                // We assume the WS to be available by the time it is requested
+//                out.write("\n        wsr.setStatus(PublishState.AVAILABLE);");
+//                out.write("\n        wsr.setWidgetSetUrl(\"" + wsUrl + "\");");
+//                out.write("\n        wsr.setWidgetSetName(\"" + wsName + "\");");
+//            }
+//
+//            out.write("\n"
+//                    + "    }\n");
+//            out.write("\n    @Override\n"
+//                    + "    public void sessionCreated(HttpSessionEvent se) {\n"
+//                    + "        if(!inited) {\n"
+//                    + "            if(wsr == null) {\n"
+//                    + "               init();\n"
+//                    + "            } else {\n"
+//                    + "               initWithResponse(wsr);\n"
+//                    + "            }\n"
+//                    + "            inited = true;\n"
+//                    + "        }\n"
+//                    + "    }\n"
+//                    + "\n"
+//                    + "    @Override\n"
+//                    + "    public void sessionDestroyed(HttpSessionEvent se) {\n"
+//                    + "    }\n"
+//                    + "");
+//
+//            out.write("}\n");
 
             // Print some info            
             System.out.println(

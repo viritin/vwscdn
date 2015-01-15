@@ -1,0 +1,65 @@
+package in.virit.vwscdn;
+
+import com.vaadin.server.BootstrapFragmentResponse;
+import com.vaadin.server.BootstrapListener;
+import com.vaadin.server.BootstrapPageResponse;
+import com.vaadin.server.ServiceException;
+import com.vaadin.server.SessionInitEvent;
+import com.vaadin.server.SessionInitListener;
+import com.vaadin.server.VaadinServletService;
+import com.vaadin.server.VaadinSession;
+import javax.servlet.annotation.WebListener;
+import javax.servlet.http.HttpSessionEvent;
+import org.jsoup.nodes.DataNode;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
+
+// Addons in this ws:
+__addons
+@WebListener
+public class GeneratedWidgetSet implements javax.servlet.http.HttpSessionListener {
+    private boolean inited = false;
+
+    private String wsUrl = "__wsUrl";
+    private String wsName = "__wsName";
+
+    public GeneratedWidgetSet() { 
+    }
+
+    @Override
+    public void sessionCreated(HttpSessionEvent se) {
+        if(!inited) {
+            VaadinServletService.getCurrent().addSessionInitListener(new SessionInitListener() {
+
+                @Override
+                public void sessionInit(SessionInitEvent event) throws ServiceException {
+            VaadinSession.getCurrent().addBootstrapListener(new BootstrapListener() {
+
+                @Override
+                public void modifyBootstrapFragment(
+                        BootstrapFragmentResponse response) {
+                }
+
+                @Override
+                public void modifyBootstrapPage(BootstrapPageResponse response) {
+                // Update the bootstrap page
+                    Document document = response.getDocument();
+                    Element scriptTag = document.getElementsByTag("script").last();
+                    String script = scriptTag.html();
+                    scriptTag.html("");
+                    script = script.replaceAll("\"widgetset\": \".*\"", "\"widgetset\": \"" + wsName + "\"");
+                    script = script.replace("});", ",\"widgetsetUrl\":\"" + wsUrl + "\"});");
+                    scriptTag.appendChild(new DataNode(script, scriptTag.baseUri()));
+                }
+            });
+            inited = true;
+                }
+            });
+        }
+    }
+
+    @Override
+    public void sessionDestroyed(HttpSessionEvent se) {
+    }
+}
