@@ -133,7 +133,7 @@ public class WidgetSetRequest {
             }
         }
 
-        return "{style=" + compileStyle + "vaadinVersion=" + vaadinVersion + ", eager=" + eagerNames + ", addons=" + addonNames + '}';
+        return "{style=" + compileStyle + ", vaadinVersion=" + vaadinVersion + ", eager=" + eagerNames + ", addons=" + addonNames + '}';
     }
 
 }
