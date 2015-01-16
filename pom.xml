@@ -64,9 +64,13 @@
                         <resource>*</resource> 
                     </resources>
                 </configuration>
-            </plugin>                   
+            </plugin>
+            <plugin><!-- Dough, a broken beta release is picked without this! -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.1</version>
+            </plugin>
         </plugins>
-    
         <extensions>
             <extension>
                 <groupId>org.apache.maven.wagon</groupId>
