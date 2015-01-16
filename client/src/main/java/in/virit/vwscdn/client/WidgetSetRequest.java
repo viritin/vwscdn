@@ -116,7 +116,7 @@ public class WidgetSetRequest {
 
     @Override
     public String toString() {
-        return "WidgetSetRequest{" + ", vaadinVersion=" + vaadinVersion + ", eager=" + eager + ", addons=" + addons + '}';
+        return "WidgetSetRequest{style=" + compileStyle + ", vaadinVersion=" + vaadinVersion + ", eager=" + eager + ", addons=" + addons + '}';
     }
 
     /* Unique and human-readable string defining the widgetset. */
@@ -133,7 +133,7 @@ public class WidgetSetRequest {
             }
         }
 
-        return "{vaadinVersion=" + vaadinVersion + ", eager=" + eagerNames + ", addons=" + addonNames + '}';
+        return "{style=" + compileStyle + "vaadinVersion=" + vaadinVersion + ", eager=" + eagerNames + ", addons=" + addonNames + '}';
     }
 
 }
