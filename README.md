@@ -192,6 +192,9 @@ Development commands
 ----
 
 Updating archetype catalog:
-    mvn archetype:crawl -DcatalogFile=/home/dev/webapps/ROOT/maven2/archetype-catalog.xml -Drepository=/home/dev/webapps/ROOT/maven2/
+
+     mvn archetype:crawl -DcatalogFile=/home/dev/webapps/ROOT/maven2/archetype-catalog.xml -Drepository=/home/dev/webapps/ROOT/maven2/
+
+
 
 
