@@ -48,7 +48,10 @@ import org.codehaus.plexus.util.IOUtil;
  * Generates necessary VWSCDN client code.
  *
  */
-@Mojo(name = "generate", defaultPhase = LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution = ResolutionScope.COMPILE)
+@Mojo(name = "generate", 
+        defaultPhase = LifecyclePhase.GENERATE_SOURCES, 
+        requiresOnline = true,         
+        requiresDependencyResolution = ResolutionScope.COMPILE)
 public class VWSCDNMojo
         extends AbstractMojo {
 

@@ -1,0 +1,16 @@
+<component-set>
+    <components>
+        <component>
+            <role>org.apache.maven.lifecycle.mapping.LifecycleMapping</role>
+            <role-hint>vwscd-generate</role-hint>
+            <implementation>org.apache.maven.lifecycle.mapping.DefaultLifecycleMapping</implementation>
+            <configuration>
+                <phases>
+                    <generate-sources>
+                        in.virit.vwscdn:vwscdn-maven-plugin:generate
+                    </generate-sources>
+                </phases>
+            </configuration>
+        </component>
+    </components>
+</component-set>
