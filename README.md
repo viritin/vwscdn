@@ -13,8 +13,7 @@ Creating a new project that uses the service
 ---
 With the Maven archetype you can easily create a project setup that uses the central compilation service.
 
-    mvn archetype:generate -DarchetypeCatalog=local -DarchetypeGroupId=in.virit.vwscdn \
-    -DarchetypeArtifactId=vwscdn-archetype -DarchetypeVersion=LATEST
+    mvn archetype:generate -DarchetypeCatalog=http://virit.in/maven2/archetype-catalog.xml
 
 This will prompt for project artifactId and groupId and generate a simple Vaadin application project.
 
