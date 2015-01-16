@@ -188,4 +188,10 @@ Which adds the matching "Switch" component to your project pom.xml.
      [INFO] BUILD SUCCESS
      [INFO] ------------------------------------------------------------------------
 
+Development commands 
+----
+
+Updating archetype catalog:
+    mvn archetype:crawl -DcatalogFile=/home/dev/webapps/ROOT/maven2/archetype-catalog.xml -Drepository=/home/dev/webapps/ROOT/maven2/
+
 
