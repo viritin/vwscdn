@@ -140,16 +140,7 @@ public class ClassPathExplorer {
             sb.append(widgetsets.get(ws));
             sb.append("\n");
         }
-
-        sb.append("Addon styles found from classpath:\n");
-        for (String theme : themes.keySet()) {
-            sb.append("\t");
-            sb.append(theme);
-            sb.append(" in ");
-            sb.append(themes.get(theme));
-            sb.append("\n");
-        }
-
+        
         log(sb.toString());
         log("Search took " + (end - start) + "ms");
         return new LocationInfo(widgetsets, themes);

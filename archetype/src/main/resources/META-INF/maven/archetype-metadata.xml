@@ -4,15 +4,13 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
     <requiredProperties>
-        <requiredProperty key="groupId">
-            <defaultValue>org.vaadin.sample</defaultValue>
-        </requiredProperty>
+        <requiredProperty key="groupId" />
         <requiredProperty key="artifactId"/>
         <requiredProperty key="version">
             <defaultValue>1.0-SNAPSHOT</defaultValue>
         </requiredProperty>
         <requiredProperty key="package">
-            <defaultValue>org.vaadin.sample</defaultValue>
+            <defaultValue>${groupId}</defaultValue>
         </requiredProperty>
     </requiredProperties>
 

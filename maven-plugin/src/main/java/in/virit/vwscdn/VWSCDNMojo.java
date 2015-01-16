@@ -29,6 +29,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 
 import java.net.URL;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -67,8 +68,8 @@ public class VWSCDNMojo
     private boolean asyncCompile;
 
     /**
-     * Compilation style for widget set. 
-     * Default is the "OBF". Supported values "OBF", "PRETTY", "DETAILED"
+     * Compilation style for widget set. Default is the "OBF". Supported values
+     * "OBF", "PRETTY", "DETAILED"
      *
      */
     @Parameter(property = "vwscdn.compile.style", defaultValue = "OBF", readonly = true)
@@ -84,13 +85,14 @@ public class VWSCDNMojo
     public void execute()
             throws MojoExecutionException {
 
-        String className = "GeneratedWidgetSet";
+        String packageName = "in.virit";
+        String className = "WidgetSet";
 
         String vaadinVersion = null;
 
         // Use same package as Maven plugin
         File packageDirectory = new File(outputDirectory,
-                VWSCDNMojo.class.getPackage().getName().replace(".", "/"));
+                packageName.replace(".", "/"));
         packageDirectory.mkdirs();
         File outputFile = new File(packageDirectory, className + ".java");
 
@@ -104,8 +106,7 @@ public class VWSCDNMojo
             Map<String, URL> availableWidgetSets = ClassPathExplorer
                     .getAvailableWidgetSets(urls);
             Set<Artifact> artifacts = project.getArtifacts();
-            //Set<Artifact> requiredArtifacts = new HashSet<>();
-            WidgetSetRequest wsReq = new WidgetSetRequest();
+            Set<Artifact> uniqueArtifacts = new HashSet<>();
             for (String name : availableWidgetSets.keySet()) {
                 URL url = availableWidgetSets.get(name);
                 for (Artifact a : artifacts) {
@@ -113,15 +114,21 @@ public class VWSCDNMojo
                     if (u.contains(a.getArtifactId())
                             && u.contains(a.getBaseVersion()) && !u.contains(
                                     "vaadin-client")) {
-                        wsReq.addon(a.getGroupId(), a.getArtifactId(), a.getBaseVersion());
+                        uniqueArtifacts.add(a);
                     }
-                    
+
                     // Store the vaadin version
                     if (a.getArtifactId().equals("vaadin-server")) {
                         vaadinVersion = a.getVersion();
                     }
                 }
             }
+
+            WidgetSetRequest wsReq = new WidgetSetRequest();
+            for (Artifact a : uniqueArtifacts) {
+                wsReq.addon(a.getGroupId(), a.getArtifactId(), a.getBaseVersion());
+            }
+            System.out.println(wsReq.getAddons().size() + " addons widget set found.");
 
             // Request compilation for the widgetset   
             wsReq.setCompileStyle(compileStyle);
@@ -138,19 +145,19 @@ public class VWSCDNMojo
                 wsName = wsRes.getWidgetSetName();
                 wsUrl = wsRes.getWidgetSetUrl();
             } else {
-                throw new MojoExecutionException("Remote widgetset compilation failed: " + (wsRes != null? wsRes.getStatus(): " (no response)"));
+                throw new MojoExecutionException("Remote widgetset compilation failed: " + (wsRes != null ? wsRes.getStatus() : " (no response)"));
             }
-            
+
             String listener = IOUtil.toString(getClass().getResourceAsStream("/weblistener.tmpl"));
             listener = listener.replace("__wsUrl", wsUrl);
             listener = listener.replace("__wsName", wsName);
-            
+
             StringBuilder sb = new StringBuilder();
             for (AddonInfo a : wsReq.getAddons()) {
                 String aid = a.getArtifactId();
                 String gid = a.getGroupId();
                 String v = a.getVersion();
-                sb.append("// ");
+                sb.append(" * ");
                 sb.append(aid);
                 sb.append(":");
                 sb.append(gid);
@@ -159,79 +166,16 @@ public class VWSCDNMojo
                 sb.append("\n");
             }
 
+            listener = listener.replace("__vaadin", " * "+ vaadinVersion);
+            listener = listener.replace("__style", " * "+ compileStyle);
             listener = listener.replace("__addons", sb.toString());
-            
+
             out.write(listener);
 
-//            out.write(
-//                    "package " + VWSCDNMojo.class.getPackage().getName() + ";\n\n");
-//
-//            out.write("import in.virit.vwscdn.client.DefaultWidgetSet;\n");
-//            out.write("import in.virit.vwscdn.client.PublishState;\n");
-//            out.write("import in.virit.vwscdn.client.WidgetSetResponse;\n");
-//            out.write("import in.virit.vwscdn.annotations.WidgetSet;\n"
-//                    + "import javax.servlet.annotation.WebListener;\n"
-//                    + "import javax.servlet.http.HttpSessionEvent;\n");
-//            out.write(
-//                    "import static in.virit.vwscdn.annotations.WidgetSetType.GENERATED;\n");
-//
-//            out.write("\n@WebListener\n");
-//            out.write("@WidgetSet(GENERATED)\n");
-//            out.write(
-//                    "public class " + className + " extends DefaultWidgetSet implements javax.servlet.http.HttpSessionListener {\n"
-//                    + "    private boolean inited = false;\n"
-//                    + "\n");
-//            if (wsName != null && wsUrl != null) {
-//                out.write("    private WidgetSetResponse wsr = new WidgetSetResponse();\n");
-//            } else {
-//                out.write("    private WidgetSetResponse wsr = null;\n");
-//            }
-//            out.write("\n"
-//                    + "    public " + className + "() { \n"
-//                    + "        super(); \n");
-//
-//            for (AddonInfo a : wsReq.getAddons()) {
-//                String aid = a.getArtifactId();
-//                String gid = a.getGroupId();
-//                String v = a.getVersion();
-//                out.write("\n        addon(\""
-//                        + gid + "\", \"" + aid + "\", \"" + v + "\");");
-//            }
-//
-//            if (wsName != null && wsUrl != null) {
-//                // We assume the WS to be available by the time it is requested
-//                out.write("\n        wsr.setStatus(PublishState.AVAILABLE);");
-//                out.write("\n        wsr.setWidgetSetUrl(\"" + wsUrl + "\");");
-//                out.write("\n        wsr.setWidgetSetName(\"" + wsName + "\");");
-//            }
-//
-//            out.write("\n"
-//                    + "    }\n");
-//            out.write("\n    @Override\n"
-//                    + "    public void sessionCreated(HttpSessionEvent se) {\n"
-//                    + "        if(!inited) {\n"
-//                    + "            if(wsr == null) {\n"
-//                    + "               init();\n"
-//                    + "            } else {\n"
-//                    + "               initWithResponse(wsr);\n"
-//                    + "            }\n"
-//                    + "            inited = true;\n"
-//                    + "        }\n"
-//                    + "    }\n"
-//                    + "\n"
-//                    + "    @Override\n"
-//                    + "    public void sessionDestroyed(HttpSessionEvent se) {\n"
-//                    + "    }\n"
-//                    + "");
-//
-//            out.write("}\n");
-
             // Print some info            
-            System.out.println(
-                    wsReq.getAddons().size() + " addons widget set found.");
             if (wsName != null && wsUrl != null) {
-                System.out.println("Widget set '" + wsName + "' created to " + outputFile.
-                        getAbsolutePath() + ". Widgetset available at: " + wsUrl);
+                System.out.println("Widgetset config created to " + outputFile.
+                        getAbsolutePath() + ". Public URL: " + wsUrl);
             } else {
                 System.out.println("Widget set created to " + outputFile.
                         getAbsolutePath() + ".");

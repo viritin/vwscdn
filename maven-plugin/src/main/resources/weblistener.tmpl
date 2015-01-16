@@ -1,4 +1,4 @@
-package in.virit.vwscdn;
+package in.virit;
 
 import com.vaadin.server.BootstrapFragmentResponse;
 import com.vaadin.server.BootstrapListener;
@@ -15,16 +15,19 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 
-// Addons in this ws:
+/* Addons in this ws:
+__vaadin
+__style
 __addons
+ */
 @WebListener
-public class GeneratedWidgetSet implements javax.servlet.http.HttpSessionListener {
+public class WidgetSet implements javax.servlet.http.HttpSessionListener {
     private boolean inited = false;
 
     private String wsUrl = "__wsUrl";
     private String wsName = "__wsName";
 
-    public GeneratedWidgetSet() { 
+    public WidgetSet() { 
     }
 
     @Override
