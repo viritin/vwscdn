@@ -25,7 +25,7 @@
         <dependency>
             <groupId>in.virit.vwscdn</groupId>
             <artifactId>vwscdn-client</artifactId>
-            <version>${version}</version>
+            <version>${archetypeVersion}</version>
         </dependency>
 
         <dependency>
@@ -67,7 +67,7 @@
             <plugin>
                 <groupId>in.virit.vwscdn</groupId>
                 <artifactId>vwscdn-maven-plugin</artifactId>
-                <version>${version}</version>
+                <version>${archetypeVersion}</version>
                 <executions>
                     <execution>
                         <phase>generate-sources</phase>
