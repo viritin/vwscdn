@@ -8,6 +8,11 @@
     </parent>
     <artifactId>vwscdn-sample</artifactId>
     <packaging>war</packaging>
+    
+    <properties>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>in.virit.vwscdn</groupId>

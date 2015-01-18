@@ -46,10 +46,10 @@ import sun.net.www.protocol.file.FileURLConnection;
  * a sluggish performance of widget compilation or unreliable detection of
  * components in your classpaths. The thing you might be able to do is to use
  * annotation processing tool like apt to generate the needed information. Then
- * either use that information in {@link WidgetMapGenerator} or create the
- * appropriate monkey code for gwt directly in annotation processor and get rid
- * of {@link WidgetMapGenerator}. Using annotation processor might be a good
- * idea when dropping Java 1.5 support (integrated to javac in 6).
+ * either use that information in WidgetMapGenerator or create the appropriate
+ * monkey code for gwt directly in annotation processor and get rid of
+ * WidgetMapGenerator. Using annotation processor might be a good idea when
+ * dropping Java 1.5 support (integrated to javac in 6).
  *
  */
 public class ClassPathExplorer {
@@ -140,7 +140,7 @@ public class ClassPathExplorer {
             sb.append(widgetsets.get(ws));
             sb.append("\n");
         }
-        
+
         log(sb.toString());
         log("Search took " + (end - start) + "ms");
         return new LocationInfo(widgetsets, themes);
@@ -172,24 +172,21 @@ public class ClassPathExplorer {
             // Get the list of the files contained in the directory
             String[] files = directory.list();
             if (files != null) {
-                for (int i = 0; i < files.length; i++) {
+                for (String file : files) {
                     // we are only interested in .gwt.xml files
-                    if (!files[i].endsWith(".gwt.xml")) {
+                    if (!file.endsWith(".gwt.xml")) {
                         continue;
                     }
-
                     // remove the .gwt.xml extension
-                    String classname = files[i].substring(0, files[i].length() - 8);
+                    String classname = file.substring(0, file.length() - 8);
                     String packageName = locationString.substring(locationString
                             .lastIndexOf("/") + 1);
                     classname = packageName + "." + classname;
-
                     if (!isWidgetset(classname)) {
                         // Only return widgetsets and not GWT modules to avoid
                         // comparing modules and widgetsets
                         continue;
                     }
-
                     if (!widgetsets.containsKey(classname)) {
                         String packagePath = packageName.replaceAll("\\.", "/");
                         String basePath = location.getFile().replaceAll(
@@ -273,7 +270,7 @@ public class ClassPathExplorer {
      */
     private static List<String> getRawClasspathEntries() {
         // try to keep the order of the classpath
-        List<String> locations = new ArrayList<String>();
+        List<String> locations = new ArrayList<>();
 
         String pathSep = System.getProperty("path.separator");
         String classpath = System.getProperty("java.class.path");
@@ -288,8 +285,7 @@ public class ClassPathExplorer {
         debug("Classpath: " + classpath);
 
         String[] split = classpath.split(pathSep);
-        for (int i = 0; i < split.length; i++) {
-            String classpathEntry = split[i];
+        for (String classpathEntry : split) {
             if (acceptClassPathEntry(classpathEntry)) {
                 locations.add(classpathEntry);
             }
@@ -396,7 +392,7 @@ public class ClassPathExplorer {
      * @param file
      * @param locations
      */
-    private final static void include(String name, File file,
+    private static void include(String name, File file,
             Map<String, URL> locations) {
         if (!file.exists()) {
             return;
@@ -419,20 +415,17 @@ public class ClassPathExplorer {
 
         // add all directories recursively
         File[] dirs = file.listFiles(DIRECTORIES_ONLY);
-        for (int i = 0; i < dirs.length; i++) {
+        for (File dir : dirs) {
             try {
                 // add the present directory
-                if (!dirs[i].isHidden()
-                        && !dirs[i].getPath().contains(File.separator + ".")) {
-                    String key = dirs[i].getCanonicalPath() + "/" + name
-                            + dirs[i].getName();
-                    locations.put(key,
-                            new URL("file://" + dirs[i].getCanonicalPath()));
+                if (!dir.isHidden() && !dir.getPath().contains(File.separator + ".")) {
+                    String key = dir.getCanonicalPath() + "/" + name + dir.getName();
+                    locations.put(key, new URL("file://" + dir.getCanonicalPath()));
                 }
             } catch (Exception ioe) {
                 return;
             }
-            include(name + dirs[i].getName(), dirs[i], locations);
+            include(name + dir.getName(), dir, locations);
         }
     }
 
@@ -454,7 +447,7 @@ public class ClassPathExplorer {
             }
         } catch (Exception e) {
             // e.printStackTrace();
-            return;
+
         }
 
     }
@@ -468,6 +461,7 @@ public class ClassPathExplorer {
      *
      * TODO this could be done better...
      *
+     * @param classpathEntries
      * @return URL
      */
     public static URL getDefaultSourceDirectory(List<String> classpathEntries) {

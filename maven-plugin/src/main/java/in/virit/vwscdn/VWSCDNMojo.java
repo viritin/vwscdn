@@ -85,6 +85,7 @@ public class VWSCDNMojo
     @Parameter(property = "outputDirectory", defaultValue = "${project.build.directory}/generated-sources/vwscdn")
     private File outputDirectory;
 
+    @Override
     public void execute()
             throws MojoExecutionException {
 

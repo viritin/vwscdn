@@ -9,6 +9,10 @@
     </parent>
     <artifactId>vwscdn-archetype</artifactId>
     <packaging>maven-archetype</packaging>
+    
+    <properties>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+    </properties>
  
     <build>
         <extensions>

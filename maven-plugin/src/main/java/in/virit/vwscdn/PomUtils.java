@@ -90,6 +90,7 @@ public class PomUtils {
      * @param groupId
      * @param artifactId
      * @param version
+     * @return 
      */
     public static Model addDependency(Model pomModel, String groupId, String artifactId, String version) {
         Dependency dep = findDependency(pomModel, groupId, artifactId);
@@ -98,9 +99,9 @@ public class PomUtils {
                 StringBuilder input = PomHelper.readXmlFile(pomModel.getPomFile());
                 ModifiedPomXMLEventReader newPom = newModifiedPomXER(input);
                 addNewDependency(newPom, groupId, artifactId, version);
-                FileWriter out = new FileWriter(pomModel.getPomFile());
-                out.write(newPom.asStringBuilder().toString());
-                out.close();
+                try (FileWriter out = new FileWriter(pomModel.getPomFile())) {
+                    out.write(newPom.asStringBuilder().toString());
+                }
             } catch (XMLStreamException | IOException ex) {
                 Logger.getLogger(PomUtils.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -130,11 +131,14 @@ public class PomUtils {
      * Adds dependency to the the pom.
      *
      * @param pom The pom.
+     * @param groupId
+     * @param artifactId
+     * @param version
      * @throws XMLStreamException if something went wrong.
      */
     public static void addNewDependency(final ModifiedPomXMLEventReader pom, String groupId, String artifactId, String version)
             throws XMLStreamException {
-        Stack<String> stack = new Stack<String>();
+        Stack<String> stack = new Stack<>();
         String path = "";
         final Pattern matchScopeRegex = Pattern.compile("/project/dependencies");
 
