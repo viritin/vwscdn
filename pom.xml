@@ -18,8 +18,8 @@
         <url>git://github.com/samie/rws.git</url>
         <connection>scm:git:git://github.com/samie/rws.git</connection>
         <developerConnection>scm:git:ssh://git@github.com:/samie/rws.git</developerConnection>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
     
     <modules>
         <module>client</module>
