@@ -1,6 +1,7 @@
 package in.virit.vwscdn.client;
 
 import java.util.Date;
+import java.util.List;
 
 public class WidgetSetStatus {
 
@@ -11,7 +12,10 @@ public class WidgetSetStatus {
     private Date compileStartTime;
     private Date compileEndTime;
     private long compileTime;
-    private WidgetSetRequest content;
+    private String compileStyle;
+    private String vaadinVersion;
+    private List<AddonInfo> addons;
+    private String publicUrl;
 
     public String getId() {
         return id;
@@ -19,14 +23,6 @@ public class WidgetSetStatus {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public WidgetSetRequest getContent() {
-        return content;
-    }
-
-    public void setContent(WidgetSetRequest content) {
-        this.content = content;
     }
 
     public Date getCompileStartTime() {
@@ -75,6 +71,38 @@ public class WidgetSetStatus {
 
     public void setPublishState(PublishState state) {
         this.publishState = state;
+    }
+
+    public String getCompileStyle() {
+        return compileStyle;
+    }
+
+    public void setCompileStyle(String compileStyle) {
+        this.compileStyle = compileStyle;
+    }
+
+    public String getVaadinVersion() {
+        return vaadinVersion;
+    }
+
+    public void setVaadinVersion(String vaadinVersion) {
+        this.vaadinVersion = vaadinVersion;
+    }
+
+    public List<AddonInfo> getAddons() {
+        return addons;
+    }
+
+    public void setAddons(List<AddonInfo> addons) {
+        this.addons = addons;
+    }
+
+    public String getPublicUrl() {
+        return publicUrl;
+    }
+
+    public void setPublicUrl(String publicUrl) {
+        this.publicUrl = publicUrl;
     }
 
 }
