@@ -10,6 +10,11 @@
     <artifactId>vwscdn-client</artifactId>
     <packaging>jar</packaging>
 
+    <properties>
+        <build.timestamp>${maven.build.timestamp}</build.timestamp>
+        <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>com.vaadin</groupId>
@@ -28,6 +33,25 @@
     </dependencies>
     
     <build>
+        
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>service.properties</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>service.properties</exclude>
+                </excludes>
+            </resource>
+        </resources>
+
+        
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -58,5 +82,7 @@
             </plugin>            
         </plugins>
     </build>
+    
+    
 
 </project>
