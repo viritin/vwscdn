@@ -27,7 +27,7 @@ To use the VWSCDN build plugin in your build, add the following:
             <artifactId>vwscdn-maven-plugin</artifactId>
             <version>1.1.5</version>
             <executions>
-            <execution>
+                <execution>
                      <goals>
                         <goal>generate</goal>
                     </goals>
