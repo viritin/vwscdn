@@ -1,13 +1,43 @@
 
 Remote widget set compilation service
 ===
-
 This project consists of parts:
  - Widgetset compiler service (+ servlet serving the compiled widgetsets)
  - Client library used in Vaadin application
  - Maven plugin that generates the widgetset configuration during project build
  - Maven archetype for creating easily new projects using the service
  - A sample application
+
+Installing into an existing Vaadin project
+---
+
+Following plugin repository is neede in your pom.xml to be able to use the build plugin:
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>viritin</id>
+            <url>http://virit.in/maven2</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+To use the VWSCDN build plugin in your build, add the following:
+
+    <plugin>
+        <groupId>in.virit.vwscdn</groupId>
+            <artifactId>vwscdn-maven-plugin</artifactId>
+            <version>1.1.5</version>
+            <executions>
+            <execution>
+                     <goals>
+                        <goal>generate</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+     </plugins>
+
+Remove all widgetset annotations in you Servlet classes and also remove the .gwt.xml file.
+
  
 Creating a new project that uses the service
 ---
