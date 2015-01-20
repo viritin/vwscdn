@@ -229,6 +229,14 @@ Making a release:
 
      mvn release:prepare
      mvn release:perform
+ 
+Deploying a tagged version of the service from GitHub:
+
+     ssh dev@cdn.virit.in "./deploy-vwscdn.sh vwscdn-1.1.6"
+     
+ or to publish latest version of service from GitHub:
+ 
+     ssh dev@cdn.virit.in "./deploy-vwscdn.sh"
 
 
 
