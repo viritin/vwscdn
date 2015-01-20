@@ -4,7 +4,7 @@
     <groupId>in.virit.vwscdn</groupId>
     <artifactId>vwscdn</artifactId>
     <packaging>pom</packaging>
-    <version>1.1.6-SNAPSHOT</version>
+    <version>1.1.6</version>
     <name>vwscdn</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -18,7 +18,7 @@
         <url>git://github.com/samie/rws.git</url>
         <connection>scm:git:git://github.com/samie/rws.git</connection>
         <developerConnection>scm:git:ssh://git@github.com:/samie/rws.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>vwscdn-1.1.6</tag>
     </scm>
     
     <modules>
