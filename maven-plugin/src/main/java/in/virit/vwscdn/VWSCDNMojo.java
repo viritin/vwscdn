@@ -48,9 +48,9 @@ import org.codehaus.plexus.util.IOUtil;
  * Generates necessary VWSCDN client code.
  *
  */
-@Mojo(name = "generate", 
-        defaultPhase = LifecyclePhase.GENERATE_SOURCES, 
-        requiresOnline = true,         
+@Mojo(name = "generate",
+        defaultPhase = LifecyclePhase.GENERATE_SOURCES,
+        requiresOnline = true,
         requiresDependencyResolution = ResolutionScope.COMPILE)
 public class VWSCDNMojo
         extends AbstractMojo {
@@ -132,7 +132,7 @@ public class VWSCDNMojo
             for (Artifact a : uniqueArtifacts) {
                 wsReq.addon(a.getGroupId(), a.getArtifactId(), a.getBaseVersion());
             }
-            System.out.println(wsReq.getAddons().size() + " addons widget set found.");
+            System.out.println((wsReq.getAddons() != null ? wsReq.getAddons().size() : 0) + " addons widget set found.");
 
             // Request compilation for the widgetset   
             wsReq.setCompileStyle(compileStyle);
@@ -157,21 +157,22 @@ public class VWSCDNMojo
             listener = listener.replace("__wsName", wsName);
 
             StringBuilder sb = new StringBuilder();
-            for (AddonInfo a : wsReq.getAddons()) {
-                String aid = a.getArtifactId();
-                String gid = a.getGroupId();
-                String v = a.getVersion();
-                sb.append(" * ");
-                sb.append(aid);
-                sb.append(":");
-                sb.append(gid);
-                sb.append(":");
-                sb.append(v);
-                sb.append("\n");
+            if (wsReq.getAddons() != null) {
+                for (AddonInfo a : wsReq.getAddons()) {
+                    String aid = a.getArtifactId();
+                    String gid = a.getGroupId();
+                    String v = a.getVersion();
+                    sb.append(" * ");
+                    sb.append(aid);
+                    sb.append(":");
+                    sb.append(gid);
+                    sb.append(":");
+                    sb.append(v);
+                    sb.append("\n");
+                }
             }
-
-            listener = listener.replace("__vaadin", " * "+ vaadinVersion);
-            listener = listener.replace("__style", " * "+ compileStyle);
+            listener = listener.replace("__vaadin", " * " + vaadinVersion);
+            listener = listener.replace("__style", " * " + compileStyle);
             listener = listener.replace("__addons", sb.toString());
 
             out.write(listener);
