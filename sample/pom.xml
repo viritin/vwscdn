@@ -60,11 +60,13 @@
 	</dependencies>
     <build>
         <plugins>
+            <!--
             <plugin>
                 <groupId>org.vaadin</groupId>
                 <artifactId>directory-maven-plugin</artifactId>
                 <version>1.0.5-SNAPSHOT</version>
             </plugin>
+            -->
 
             <plugin>
                 <groupId>in.virit.vwscdn</groupId>
