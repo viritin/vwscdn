@@ -11,6 +11,7 @@
     
     <properties>
         <maven.javadoc.skip>true</maven.javadoc.skip>
+        <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
 
     <dependencies>
@@ -95,12 +96,6 @@
                         <contextPath>/</contextPath>
                     </webApp>
                 </configuration>
-            </plugin> 
-            <plugin> 
-                <artifactId>maven-deploy-plugin</artifactId> 
-                <configuration> 
-                    <skip>true</skip> 
-                </configuration> 
             </plugin> 
         </plugins>
     </build>
