@@ -13,7 +13,6 @@
         <maven.compiler.target>1.7</maven.compiler.target>      
     </properties>
 
-
     <dependencies>
         
         <dependency>
@@ -60,14 +59,7 @@
                 <groupId>in.virit.vwscdn</groupId>
                 <artifactId>vwscdn-maven-plugin</artifactId>
                 <version>${archetypeVersion}</version>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <extensions>true</extensions> 
             </plugin>
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
