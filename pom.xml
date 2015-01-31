@@ -23,9 +23,9 @@
     
     <modules>
         <module>client</module>
-        <module>service</module>
         <module>maven-plugin</module>
         <module>archetype</module>
+        <module>service</module>
     </modules>
     
     <repositories>
