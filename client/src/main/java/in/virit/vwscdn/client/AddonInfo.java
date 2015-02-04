@@ -1,5 +1,6 @@
 package in.virit.vwscdn.client;
 
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
@@ -66,4 +67,35 @@ public class AddonInfo {
         return "{" + "groupId=" + groupId + ", artifactId=" + artifactId + ", version=" + version + '}';
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 41 * hash + Objects.hashCode(this.groupId);
+        hash = 41 * hash + Objects.hashCode(this.artifactId);
+        hash = 41 * hash + Objects.hashCode(this.version);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final AddonInfo other = (AddonInfo) obj;
+        if (!Objects.equals(this.groupId, other.groupId)) {
+            return false;
+        }
+        if (!Objects.equals(this.artifactId, other.artifactId)) {
+            return false;
+        }
+        if (!Objects.equals(this.version, other.version)) {
+            return false;
+        }
+        return true;
+    }
+
+    
 }
