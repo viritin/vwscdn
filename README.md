@@ -25,7 +25,7 @@ To use the VWSCDN build plugin in your build, add the following:
     <plugin>
         <groupId>in.virit.vwscdn</groupId>
             <artifactId>vwscdn-maven-plugin</artifactId>
-            <version>1.1.8</version>
+            <version>1.2.0</version>
             <extensions>true</extensions>
         </plugin>
      </plugins>
@@ -161,7 +161,7 @@ First, install the maven plugin to your project:
             <plugin>
                 <groupId>in.virit.vwscdn</groupId>
                 <artifactId>vwscdn-maven-plugin</artifactId>
-                <version>LATEST</version>
+                <version>1.2.0</version>
                 <executions>
                     <execution>
                         <phase>generate-sources</phase>
