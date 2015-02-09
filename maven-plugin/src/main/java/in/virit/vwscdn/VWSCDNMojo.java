@@ -155,6 +155,7 @@ public class VWSCDNMojo
             String listener = IOUtil.toString(getClass().getResourceAsStream("/weblistener.tmpl"));
             listener = listener.replace("__wsUrl", wsUrl);
             listener = listener.replace("__wsName", wsName);
+            listener = listener.replace("__wsReady", wsRes.getStatus() == PublishState.AVAILABLE ? "true" : "false");
 
             StringBuilder sb = new StringBuilder();
             if (wsReq.getAddons() != null) {
