@@ -54,7 +54,9 @@ public class WidgetSet implements javax.servlet.http.HttpSessionListener {
                     String script = scriptTag.html();
                     scriptTag.html("");
                     script = script.replaceAll("\"widgetset\": \".*\"", "\"widgetset\": \"" + wsName + "\"");
-                    script = script.replace("});", ",\"widgetsetUrl\":\"" + wsUrl + "\"});");
+                    if(!wsUrl.equals("__wsUrl")) {
+                        script = script.replace("});", ",\"widgetsetUrl\":\"" + wsUrl + "\"});");
+                    }
                     if(!wsReady) {
                         script += "\nvar wsname = \"__wsName\";\nsetTimeout(function() {if(!window[wsname]) {if (window.confirm('The widgetset cloud still hadn\\'t compiled your widgetset. Depending on usage, this may take 0.5 - n minutes. Would you like to try again?')) { window[wsname] = 'foo'; window.location.reload(false);}}}, 14000);";
                     }

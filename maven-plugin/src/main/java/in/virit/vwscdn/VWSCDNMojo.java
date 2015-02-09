@@ -71,6 +71,15 @@ public class VWSCDNMojo
     private boolean asyncCompile;
 
     /**
+     * FOR EXPERTS ONLY, with this flag the widgetset is downloaded into local
+     * war file. With this option you'll use the widgetset CDN only for
+     * compilation and the result is downloaded to local war file for serving it
+     * to your users.
+     */
+    @Parameter(property = "vwscdn.download", defaultValue = "false", readonly = true)
+    private boolean download;
+
+    /**
      * Compilation style for widget set. Default is the "OBF". Supported values
      * "OBF", "PRETTY", "DETAILED"
      *
@@ -84,6 +93,13 @@ public class VWSCDNMojo
      */
     @Parameter(property = "outputDirectory", defaultValue = "${project.build.directory}/generated-sources/vwscdn")
     private File outputDirectory;
+
+    /**
+     * Output directory for generated source files.
+     *
+     */
+    @Parameter(property = "downloadedDirectory", defaultValue = "${project.build.directory}/${project.build.finalName}/VAADIN/widgetsets")
+    private File downloadedDirectory;
 
     @Override
     public void execute()
@@ -130,65 +146,20 @@ public class VWSCDNMojo
 
             WidgetSetRequest wsReq = new WidgetSetRequest();
             for (Artifact a : uniqueArtifacts) {
-                wsReq.addon(a.getGroupId(), a.getArtifactId(), a.getBaseVersion());
+                wsReq.addon(a.getGroupId(), a.getArtifactId(), a.
+                        getBaseVersion());
             }
-            System.out.println((wsReq.getAddons() != null ? wsReq.getAddons().size() : 0) + " addons widget set found.");
+            System.out.println((wsReq.getAddons() != null ? wsReq.getAddons().
+                    size() : 0) + " addons widget set found.");
 
             // Request compilation for the widgetset   
             wsReq.setCompileStyle(compileStyle);
             wsReq.setVaadinVersion(vaadinVersion);
-            String wsName = null;
-            String wsUrl = null;
-
-            Connection conn = new Connection();
-            WidgetSetResponse wsRes = conn.queryRemoteWidgetSet(wsReq, asyncCompile);
-            if (wsRes != null && (wsRes.getStatus() == PublishState.AVAILABLE // Compiled and published
-                    || wsRes.getStatus() == PublishState.COMPILED // Compiled succesfully, but not yet available
-                    || wsRes.getStatus() == PublishState.COMPILING)) // Currently compiling the widgetset)
-            {
-                wsName = wsRes.getWidgetSetName();
-                wsUrl = wsRes.getWidgetSetUrl();
+            if(download) {
+                serveLocally(wsReq, vaadinVersion, out, outputFile);
             } else {
-                throw new MojoExecutionException("Remote widgetset compilation failed: " + (wsRes != null ? wsRes.getStatus() : " (no response)"));
+                serveFromCDN(wsReq, vaadinVersion, out, outputFile);
             }
-
-            String listener = IOUtil.toString(getClass().getResourceAsStream("/weblistener.tmpl"));
-            listener = listener.replace("__wsUrl", wsUrl);
-            listener = listener.replace("__wsName", wsName);
-            listener = listener.replace("__wsReady", wsRes.getStatus() == PublishState.AVAILABLE ? "true" : "false");
-
-            StringBuilder sb = new StringBuilder();
-            if (wsReq.getAddons() != null) {
-                for (AddonInfo a : wsReq.getAddons()) {
-                    String aid = a.getArtifactId();
-                    String gid = a.getGroupId();
-                    String v = a.getVersion();
-                    sb.append(" * ");
-                    sb.append(aid);
-                    sb.append(":");
-                    sb.append(gid);
-                    sb.append(":");
-                    sb.append(v);
-                    sb.append("\n");
-                }
-            }
-            listener = listener.replace("__vaadin", " * " + vaadinVersion);
-            listener = listener.replace("__style", " * " + compileStyle);
-            listener = listener.replace("__addons", sb.toString());
-
-            out.write(listener);
-
-            // Print some info            
-            if (wsName != null && wsUrl != null) {
-                System.out.println("Widgetset config created to " + outputFile.
-                        getAbsolutePath() + ". Public URL: " + wsUrl);
-            } else {
-                System.out.println("Widget set created to " + outputFile.
-                        getAbsolutePath() + ".");
-
-            }
-
-            project.addCompileSourceRoot("target/generated-sources/vwscdn");
         } catch (DependencyResolutionRequiredException | MalformedURLException ex) {
             Logger.getLogger(VWSCDNMojo.class.getName()).log(Level.SEVERE, null,
                     ex);
@@ -197,5 +168,106 @@ public class VWSCDNMojo
                     ex);
         }
 
+    }
+
+    protected void serveLocally(WidgetSetRequest wsReq, String vaadinVersion,
+            final FileWriter out, File outputFile) throws IOException, MojoExecutionException {
+        
+        String wsName = null;
+        String wsUrl = null;
+
+        Connection conn = new Connection();
+        wsName = conn.downloadRemoteWidgetSet(wsReq, downloadedDirectory);
+
+        String listener = IOUtil.toString(getClass().getResourceAsStream(
+                "/weblistener.tmpl"));
+        listener = listener.replace("__wsName", wsName);
+        listener = listener.replace("__wsReady", "true");
+
+        StringBuilder sb = new StringBuilder();
+        if (wsReq.getAddons() != null) {
+            for (AddonInfo a : wsReq.getAddons()) {
+                String aid = a.getArtifactId();
+                String gid = a.getGroupId();
+                String v = a.getVersion();
+                sb.append(" * ");
+                sb.append(aid);
+                sb.append(":");
+                sb.append(gid);
+                sb.append(":");
+                sb.append(v);
+                sb.append("\n");
+            }
+        }
+        listener = listener.replace("__vaadin", " * " + vaadinVersion);
+        listener = listener.replace("__style", " * " + compileStyle);
+        listener = listener.replace("__addons", sb.toString());
+
+        out.write(listener);
+
+        System.out.println("Widgetset config created to " + outputFile.
+                getAbsolutePath() + ".");
+
+        project.addCompileSourceRoot("target/generated-sources/vwscdn");
+    }
+
+    protected void serveFromCDN(WidgetSetRequest wsReq, String vaadinVersion,
+            final FileWriter out, File outputFile) throws IOException, MojoExecutionException {
+        String wsName = null;
+        String wsUrl = null;
+
+        Connection conn = new Connection();
+        WidgetSetResponse wsRes = conn.queryRemoteWidgetSet(wsReq, asyncCompile);
+        if (wsRes != null && (wsRes.getStatus() == PublishState.AVAILABLE // Compiled and published
+                || wsRes.getStatus() == PublishState.COMPILED // Compiled succesfully, but not yet available
+                || wsRes.getStatus() == PublishState.COMPILING)) // Currently compiling the widgetset)
+        {
+            wsName = wsRes.getWidgetSetName();
+            wsUrl = wsRes.getWidgetSetUrl();
+        } else {
+            throw new MojoExecutionException(
+                    "Remote widgetset compilation failed: " + (wsRes != null ? wsRes.
+                            getStatus() : " (no response)"));
+        }
+
+        String listener = IOUtil.toString(getClass().getResourceAsStream(
+                "/weblistener.tmpl"));
+        listener = listener.replace("__wsUrl", wsUrl);
+        listener = listener.replace("__wsName", wsName);
+        listener = listener.replace("__wsReady",
+                wsRes.getStatus() == PublishState.AVAILABLE ? "true" : "false");
+
+        StringBuilder sb = new StringBuilder();
+        if (wsReq.getAddons() != null) {
+            for (AddonInfo a : wsReq.getAddons()) {
+                String aid = a.getArtifactId();
+                String gid = a.getGroupId();
+                String v = a.getVersion();
+                sb.append(" * ");
+                sb.append(aid);
+                sb.append(":");
+                sb.append(gid);
+                sb.append(":");
+                sb.append(v);
+                sb.append("\n");
+            }
+        }
+        listener = listener.replace("__vaadin", " * " + vaadinVersion);
+        listener = listener.replace("__style", " * " + compileStyle);
+        listener = listener.replace("__addons", sb.toString());
+
+        out.write(listener);
+
+        // Print some info
+        if (wsName != null && wsUrl != null) {
+            System.out.println("Widgetset config created to " + outputFile.
+                    getAbsolutePath() + ". Public URL: " + wsUrl);
+        } else {
+            System.out.println("Widget set created to " + outputFile.
+                    getAbsolutePath() + ".");
+
+        }
+
+        project.addCompileSourceRoot("target/generated-sources/vwscdn");
     }
 }
