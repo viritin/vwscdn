@@ -21,6 +21,7 @@ import in.virit.vwscdn.client.PublishState;
 import in.virit.vwscdn.client.WidgetSetRequest;
 import in.virit.vwscdn.client.WidgetSetResponse;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -35,6 +36,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -93,6 +96,13 @@ public class VWSCDNMojo
      */
     @Parameter(property = "outputDirectory", defaultValue = "${project.build.directory}/generated-sources/vwscdn")
     private File outputDirectory;
+    
+    /**
+     * Last used widgetset
+     */
+    @Parameter(defaultValue = "${project.build.directory}/vwscdn-widgetset")
+    private File lastWidgetset;
+
 
     /**
      * Output directory for generated source files.
@@ -155,6 +165,18 @@ public class VWSCDNMojo
             // Request compilation for the widgetset   
             wsReq.setCompileStyle(compileStyle);
             wsReq.setVaadinVersion(vaadinVersion);
+            
+            if(lastWidgetset.exists() && 
+                    FileUtils.readFileToString(lastWidgetset)
+                            .equals(wsReq.toWidgetsetString())) {
+                System.out.println("No changes in widgetset: " 
+                        + wsReq.toWidgetsetString());
+                return;
+            } else {
+                FileUtils.writeStringToFile(lastWidgetset, wsReq.toWidgetsetString());
+            }
+            
+            
             if(download) {
                 serveLocally(wsReq, vaadinVersion, out, outputFile);
             } else {
