@@ -17,6 +17,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.apache.commons.codec.digest.DigestUtils;
 
 public class Connection {
 
@@ -87,9 +88,7 @@ public class Connection {
                 + System.getProperty("os.version") + "; "
                 + System.getProperty("java.runtime.name") + "/"
                 + System.getProperty("java.version") + "; "
-                + System.getProperty("user.name") + "/"
-                + System.getProperty("user.country") + "/"
-                + System.getProperty("user.language")
+                + DigestUtils.md5Hex(System.getProperty("user.name"))
                 + ")";
     }
 
