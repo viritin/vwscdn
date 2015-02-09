@@ -203,6 +203,7 @@ public class VWSCDNMojo
 
         String listener = IOUtil.toString(getClass().getResourceAsStream(
                 "/weblistener.tmpl"));
+        listener = listener.replace("__wsUrl", "local");
         listener = listener.replace("__wsName", wsName);
         listener = listener.replace("__wsReady", "true");
 

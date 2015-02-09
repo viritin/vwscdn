@@ -54,7 +54,7 @@ public class WidgetSet implements javax.servlet.http.HttpSessionListener {
                     String script = scriptTag.html();
                     scriptTag.html("");
                     script = script.replaceAll("\"widgetset\": \".*\"", "\"widgetset\": \"" + wsName + "\"");
-                    if(!wsUrl.equals("__wsUrl")) {
+                    if(!wsUrl.equals("local")) {
                         script = script.replace("});", ",\"widgetsetUrl\":\"" + wsUrl + "\"});");
                     }
                     if(!wsReady) {
