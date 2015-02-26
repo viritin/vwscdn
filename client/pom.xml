@@ -9,6 +9,7 @@
     </parent>    
     <artifactId>vwscdn-client</artifactId>
     <packaging>jar</packaging>
+    <description>cdn.virit.in widgetset compiler client</description>
 
     <properties>
         <build.timestamp>${maven.build.timestamp}</build.timestamp>

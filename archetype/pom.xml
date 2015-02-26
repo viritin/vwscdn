@@ -9,6 +9,7 @@
     </parent>
     <artifactId>vwscdn-archetype</artifactId>
     <packaging>maven-archetype</packaging>
+    <description>cdn.virit.in project archetype</description>
     
     <properties>
         <maven.javadoc.skip>true</maven.javadoc.skip>
