@@ -11,30 +11,6 @@
     <description>cdn.virit.in Maven build plugin</description>
 
     <dependencies>
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-server</artifactId>
-            <version>${vaadin.version}</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.vaadin</groupId>
-                    <artifactId>vaadin-sass-compiler</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.vaadin.external.google</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.jsoup</groupId>
-                    <artifactId>jsoup</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.vaadin</groupId>
-                    <artifactId>vaadin-shared</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
         
         <dependency>
             <groupId>in.virit.vwscdn</groupId>

@@ -11,7 +11,7 @@ The service uses Maven to compile the requested widgetset on the fly. Generation
 - Vaadin version 
 - all addon dependencies in the project
 - eager loading of widgets (by default deferred loading is used)
-- compilation style (OBF, PRETTY)
+- GWT compilation style (e.g. OBF, PRETTY)
 
 Maven plugin can be used to automatically generate 
 org.vaadin.vwscdn.GeneratedWidgetSet.java code for the client. 
@@ -21,16 +21,7 @@ It uses the project classpath to resolve the included add-ons.
 Using Maven plugin in a Vaadin project
 ---
 
-Following plugin repository is needed in your pom.xml to be able to use the build plugin:
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>viritin</id>
-            <url>http://virit.in/maven2</url>
-        </pluginRepository>
-    </pluginRepositories>
-
-To use the VWSCDN build plugin in your build, add the following:
+The plugin is available in Maven central repository. To use the VWSCDN build plugin in your build, add the following:
 
      </plugins>
          <plugin>
