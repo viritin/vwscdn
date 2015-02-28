@@ -94,13 +94,12 @@ public class VWSCDNMojo
      */
     @Parameter(property = "outputDirectory", defaultValue = "${project.build.directory}/generated-sources/vwscdn")
     private File outputDirectory;
-    
+
     /**
      * Last used widgetset
      */
     @Parameter(defaultValue = "${project.build.directory}/vwscdn-widgetset")
     private File lastWidgetset;
-
 
     /**
      * Output directory for generated source files.
@@ -113,18 +112,18 @@ public class VWSCDNMojo
     public void execute()
             throws MojoExecutionException {
 
-        String packageName = "in.virit";
-        String className = "WidgetSet";
+        try {
 
-        String vaadinVersion = null;
+            String packageName = "in.virit";
+            String className = "WidgetSet";
 
-        // Use same package as Maven plugin
-        File packageDirectory = new File(outputDirectory,
-                packageName.replace(".", "/"));
-        packageDirectory.mkdirs();
-        File outputFile = new File(packageDirectory, className + ".java");
+            String vaadinVersion = null;
 
-        try (FileWriter out = new FileWriter(outputFile)) {
+            // Use same package as Maven plugin
+            File packageDirectory = new File(outputDirectory,
+                    packageName.replace(".", "/"));
+            packageDirectory.mkdirs();
+
             List cp = project.getCompileClasspathElements();
             Map<String, URL> urls = new HashMap<>();
             for (Object object : cp) {
@@ -163,27 +162,30 @@ public class VWSCDNMojo
             // Request compilation for the widgetset   
             wsReq.setCompileStyle(compileStyle);
             wsReq.setVaadinVersion(vaadinVersion);
-            
-            if(lastWidgetset.exists() && 
-                    FileUtils.readFileToString(lastWidgetset)
-                            .equals(wsReq.toWidgetsetString())) {
-                System.out.println("No changes in widgetset: " 
+
+            if (lastWidgetset.exists()
+                    && FileUtils.readFileToString(lastWidgetset)
+                    .equals(wsReq.toWidgetsetString())) {
+                System.out.println("No changes in widgetset: "
                         + wsReq.toWidgetsetString());
                 return;
             } else {
-                FileUtils.writeStringToFile(lastWidgetset, wsReq.toWidgetsetString());
+                FileUtils.
+                        writeStringToFile(lastWidgetset, wsReq.
+                                toWidgetsetString());
             }
-            
-            
-            if(download) {
-                serveLocally(wsReq, vaadinVersion, out, outputFile);
+
+            File outputFile = new File(packageDirectory, className + ".java");
+
+            if (download) {
+                serveLocally(wsReq, vaadinVersion, outputFile);
             } else {
-                serveFromCDN(wsReq, vaadinVersion, out, outputFile);
+                serveFromCDN(wsReq, vaadinVersion, outputFile);
             }
-        } catch (DependencyResolutionRequiredException | MalformedURLException ex) {
+        } catch (IOException ex) {
             Logger.getLogger(VWSCDNMojo.class.getName()).log(Level.SEVERE, null,
                     ex);
-        } catch (IOException ex) {
+        } catch (DependencyResolutionRequiredException ex) {
             Logger.getLogger(VWSCDNMojo.class.getName()).log(Level.SEVERE, null,
                     ex);
         }
@@ -191,8 +193,8 @@ public class VWSCDNMojo
     }
 
     protected void serveLocally(WidgetSetRequest wsReq, String vaadinVersion,
-            final FileWriter out, File outputFile) throws IOException, MojoExecutionException {
-        
+            File outputFile) throws IOException, MojoExecutionException {
+
         String wsName = null;
         String wsUrl = null;
 
@@ -224,7 +226,7 @@ public class VWSCDNMojo
         listener = listener.replace("__style", " * " + compileStyle);
         listener = listener.replace("__addons", sb.toString());
 
-        out.write(listener);
+        FileUtils.writeStringToFile(outputFile, listener);
 
         System.out.println("Widgetset config created to " + outputFile.
                 getAbsolutePath() + ".");
@@ -233,7 +235,7 @@ public class VWSCDNMojo
     }
 
     protected void serveFromCDN(WidgetSetRequest wsReq, String vaadinVersion,
-            final FileWriter out, File outputFile) throws IOException, MojoExecutionException {
+            File outputFile) throws IOException, MojoExecutionException {
         String wsName = null;
         String wsUrl = null;
 
@@ -277,7 +279,7 @@ public class VWSCDNMojo
         listener = listener.replace("__style", " * " + compileStyle);
         listener = listener.replace("__addons", sb.toString());
 
-        out.write(listener);
+        FileUtils.writeStringToFile(outputFile, listener);
 
         // Print some info
         if (wsName != null && wsUrl != null) {
