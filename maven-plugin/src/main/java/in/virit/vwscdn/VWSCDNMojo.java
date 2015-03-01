@@ -114,6 +114,8 @@ public class VWSCDNMojo
 
         try {
 
+            project.addCompileSourceRoot("target/generated-sources/vwscdn");
+
             String packageName = "in.virit";
             String className = "WidgetSet";
 
@@ -231,7 +233,6 @@ public class VWSCDNMojo
         System.out.println("Widgetset config created to " + outputFile.
                 getAbsolutePath() + ".");
 
-        project.addCompileSourceRoot("target/generated-sources/vwscdn");
     }
 
     protected void serveFromCDN(WidgetSetRequest wsReq, String vaadinVersion,
@@ -290,7 +291,5 @@ public class VWSCDNMojo
                     getAbsolutePath() + ".");
 
         }
-
-        project.addCompileSourceRoot("target/generated-sources/vwscdn");
     }
 }
