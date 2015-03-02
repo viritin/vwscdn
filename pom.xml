@@ -4,7 +4,7 @@
     <groupId>in.virit.vwscdn</groupId>
     <artifactId>vwscdn</artifactId>
     <packaging>pom</packaging>
-    <version>1.3.3-SNAPSHOT</version>
+    <version>1.3.3</version>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Tools for Vaadin widgetset cloud compiler and CDN.</description>
     <url>http://cdn.virit.in</url>
@@ -39,7 +39,7 @@
         <url>git://github.com/viritin/vwscdn.git</url>
         <connection>scm:git:git://github.com/viritin/vwscdn.git</connection>
         <developerConnection>scm:git:ssh://git@github.com:/viritin/vwscdn.git</developerConnection>
-        <tag>vwscdn-1.3.0</tag>
+        <tag>vwscdn-1.3.3</tag>
     </scm>
     
     <modules>
