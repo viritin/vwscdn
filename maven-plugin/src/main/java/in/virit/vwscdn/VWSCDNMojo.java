@@ -135,7 +135,15 @@ public class VWSCDNMojo
             Map<String, URL> availableWidgetSets = ClassPathExplorer
                     .getAvailableWidgetSets(urls);
             Set<Artifact> artifacts = project.getArtifacts();
+            for (Artifact artifact : artifacts) {
+                // Store the vaadin version
+                if (artifact.getArtifactId().equals("vaadin-server")) {
+                    vaadinVersion = artifact.getVersion();
+                    break;
+                }
+            }
             Set<Artifact> uniqueArtifacts = new HashSet<>();
+
             for (String name : availableWidgetSets.keySet()) {
                 URL url = availableWidgetSets.get(name);
                 for (Artifact a : artifacts) {
@@ -144,11 +152,6 @@ public class VWSCDNMojo
                             && u.contains(a.getBaseVersion()) && !u.contains(
                                     "vaadin-client")) {
                         uniqueArtifacts.add(a);
-                    }
-
-                    // Store the vaadin version
-                    if (a.getArtifactId().equals("vaadin-server")) {
-                        vaadinVersion = a.getVersion();
                     }
                 }
             }
