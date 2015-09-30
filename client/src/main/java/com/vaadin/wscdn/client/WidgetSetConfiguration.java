@@ -1,4 +1,4 @@
-package in.virit.vwscdn.client;
+package com.vaadin.wscdn.client;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;

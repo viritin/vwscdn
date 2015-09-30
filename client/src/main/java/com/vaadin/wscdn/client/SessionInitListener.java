@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package in.virit.vwscdn.client;
+package com.vaadin.wscdn.client;
 
 import com.vaadin.server.BootstrapFragmentResponse;
 import com.vaadin.server.BootstrapListener;

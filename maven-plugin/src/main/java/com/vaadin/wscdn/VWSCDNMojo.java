@@ -1,4 +1,4 @@
-package in.virit.vwscdn;
+package com.vaadin.wscdn;
 
 /*
  * Copyright 2001-2005 The Apache Software Foundation.
@@ -15,11 +15,11 @@ package in.virit.vwscdn;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import in.virit.vwscdn.client.AddonInfo;
-import in.virit.vwscdn.client.Connection;
-import in.virit.vwscdn.client.PublishState;
-import in.virit.vwscdn.client.WidgetSetRequest;
-import in.virit.vwscdn.client.WidgetSetResponse;
+import com.vaadin.wscdn.client.AddonInfo;
+import com.vaadin.wscdn.client.Connection;
+import com.vaadin.wscdn.client.PublishState;
+import com.vaadin.wscdn.client.WidgetSetRequest;
+import com.vaadin.wscdn.client.WidgetSetResponse;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -68,7 +68,7 @@ public class VWSCDNMojo
      * but if synchronous mode is needed this should be set to false.
      *
      */
-    @Parameter(property = "vwscdn.async", defaultValue = "true", readonly = true)
+    @Parameter(property = "wscdn.async", defaultValue = "true", readonly = true)
     private boolean asyncCompile;
 
     /**
@@ -77,7 +77,7 @@ public class VWSCDNMojo
      * compilation and the result is downloaded to local war file for serving it
      * to your users.
      */
-    @Parameter(property = "vwscdn.download", defaultValue = "false", readonly = true)
+    @Parameter(property = "wscdn.download", defaultValue = "false")
     private boolean download;
 
     /**
@@ -85,20 +85,20 @@ public class VWSCDNMojo
      * "OBF", "PRETTY", "DETAILED"
      *
      */
-    @Parameter(property = "vwscdn.compile.style", defaultValue = "OBF", readonly = true)
+    @Parameter(property = "wscdn.compile.style", defaultValue = "OBF", readonly = true)
     private String compileStyle;
 
     /**
      * Output directory for generated source files.
      *
      */
-    @Parameter(property = "outputDirectory", defaultValue = "${project.build.directory}/generated-sources/vwscdn")
+    @Parameter(property = "outputDirectory", defaultValue = "${project.build.directory}/generated-sources/wscdn")
     private File outputDirectory;
 
     /**
      * Last used widgetset
      */
-    @Parameter(defaultValue = "${project.build.directory}/vwscdn-widgetset")
+    @Parameter(defaultValue = "${project.build.directory}/wscdn-widgetset")
     private File lastWidgetset;
 
     /**
@@ -114,9 +114,9 @@ public class VWSCDNMojo
 
         try {
 
-            project.addCompileSourceRoot("target/generated-sources/vwscdn");
+            project.addCompileSourceRoot("target/generated-sources/wscdn");
 
-            String packageName = "in.virit";
+            String packageName = "com.vaadin.wscdn";
             String className = "WidgetSet";
 
             String vaadinVersion = null;

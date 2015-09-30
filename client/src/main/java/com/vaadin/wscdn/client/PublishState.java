@@ -1,4 +1,4 @@
-package in.virit.vwscdn.client;
+package com.vaadin.wscdn.client;
 
 public enum PublishState {
 

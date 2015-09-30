@@ -1,4 +1,4 @@
-package in.virit.vwscdn.annotations;
+package com.vaadin.wscdn.annotations;
 
 /**
  * Type of the widget set.

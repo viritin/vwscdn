@@ -1,12 +1,12 @@
-package in.virit.vwscdn.client;
+package com.vaadin.wscdn.client;
 
 import com.vaadin.server.VaadinService;
-import in.virit.vwscdn.annotations.WidgetSet;
+import com.vaadin.wscdn.annotations.WidgetSet;
 import com.vaadin.server.VaadinServletService;
 import com.vaadin.shared.Version;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
-import in.virit.vwscdn.annotations.WidgetSetType;
+import com.vaadin.wscdn.annotations.WidgetSetType;
 
 /**
  * Client entry point.

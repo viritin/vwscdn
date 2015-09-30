@@ -1,4 +1,4 @@
-package in.virit.vwscdn.client;
+package com.vaadin.wscdn.client;
 
 import java.util.Objects;
 import javax.xml.bind.annotation.XmlTransient;

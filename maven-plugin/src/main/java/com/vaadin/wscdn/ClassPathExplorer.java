@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package in.virit.vwscdn;
+package com.vaadin.wscdn;
 
 import java.io.File;
 import java.io.FileFilter;
