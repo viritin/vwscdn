@@ -21,7 +21,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 
 public class Connection {
 
-    public static final String COMPILE_SERVICE_URL = "http://vwscdn.vaadin.com/vwscdn-service/";
+    public static final String COMPILE_SERVICE_URL = "https://wscdn.vaadin.com/";
     public static final String COMPILE_SERVICE_URL_LOCAL = "http://localhost:8080/vwscdn";
     public static final String PARAM_VWSCDN_LOCAL = "vwscdn.local";
     public static final String QUERY_PARAM_ASYNC_COMPILE = "compile.async";
