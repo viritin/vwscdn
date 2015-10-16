@@ -15,6 +15,8 @@
  */
 package com.vaadin.wscdn;
 
+import com.vaadin.wscdn.CvalInfo;
+import com.vaadin.wscdn.CvalChecker.UnreachableCvalServerException;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -22,12 +24,15 @@ import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
@@ -55,6 +60,21 @@ import sun.net.www.protocol.file.FileURLConnection;
 public class ClassPathExplorer {
 
     private static final String VAADIN_ADDON_VERSION_ATTRIBUTE = "Vaadin-Package-Version";
+
+    // Manifest attributes
+    public static final String VAADIN_ADDON_LICENSE = "AdVaaLicen";
+    public static final String VAADIN_ADDON_NAME = "AdVaaName";
+    public static final String VAADIN_ADDON_WIDGETSET = "Vaadin-Widgetsets";
+    public static final String VAADIN_ADDON_VERSION = "Implementation-Version";
+    public static final String VAADIN_ADDON_TITLE = "Implementation-Title";
+    public static final String LINE = "----------------------------------------------------------------------------------------------------------------------";
+
+
+    // License types
+    public static final String VAADIN_AGPL = "agpl";
+    public static final String VAADIN_CVAL = "cval";
+
+    static CvalChecker cvalChecker = new CvalChecker();
 
     /**
      * File filter that only accepts directories.
@@ -110,8 +130,10 @@ public class ClassPathExplorer {
      * @param classpathLocations
      * @return map from widgetset classname to widgetset location URL
      */
-    public static Map<String, URL> getAvailableWidgetSets(Map<String, URL> classpathLocations) {
-        return getAvailableWidgetSetsAndStylesheets(classpathLocations).getWidgetsets();
+    public static Map<String, URL> getAvailableWidgetSets(
+            Map<String, URL> classpathLocations) throws CvalChecker.InvalidCvalException {
+        return getAvailableWidgetSetsAndStylesheets(classpathLocations).
+                getWidgetsets();
     }
 
     /**
@@ -121,13 +143,15 @@ public class ClassPathExplorer {
      * @param classpathLocations
      * @return
      */
-    public static LocationInfo getAvailableWidgetSetsAndStylesheets(Map<String, URL> classpathLocations) {
+    public static LocationInfo getAvailableWidgetSetsAndStylesheets(
+            Map<String, URL> classpathLocations) throws CvalChecker.InvalidCvalException {
         long start = System.currentTimeMillis();
         Map<String, URL> widgetsets = new HashMap<>();
         Map<String, URL> themes = new HashMap<>();
         Set<String> keySet = classpathLocations.keySet();
         for (String location : keySet) {
-            searchForWidgetSetsAndAddonStyles(location, classpathLocations, widgetsets, themes);
+            searchForWidgetSetsAndAddonStyles(location, classpathLocations,
+                    widgetsets, themes);
         }
         long end = System.currentTimeMillis();
 
@@ -162,13 +186,15 @@ public class ClassPathExplorer {
      * are added to this map
      */
     private static void searchForWidgetSetsAndAddonStyles(
-            String locationString, Map<String, URL> inClasspathLocations, Map<String, URL> widgetsets,
-            Map<String, URL> addonStyles) {
+            String locationString, Map<String, URL> inClasspathLocations,
+            Map<String, URL> widgetsets,
+            Map<String, URL> addonStyles) throws CvalChecker.InvalidCvalException {
 
         URL location = inClasspathLocations.get(locationString);
         File directory = new File(location.getFile());
 
-        if (directory.exists() && directory.isDirectory() && !directory.isHidden()) {
+        if (directory.exists() && directory.isDirectory() && !directory.
+                isHidden()) {
             // Get the list of the files contained in the directory
             String[] files = directory.list();
             if (files != null) {
@@ -236,6 +262,46 @@ public class ClassPathExplorer {
                             String widgetsetname = widgetsetNames[i].trim();
                             if (!widgetsetname.equals("")) {
                                 widgetsets.put(widgetsetname, location);
+                            }
+                        }
+
+                        Attributes attribs = manifest.getMainAttributes();
+                        String license = attribs.getValue(VAADIN_ADDON_LICENSE);
+                        String name = attribs.getValue(VAADIN_ADDON_NAME);
+                        String vers = attribs.getValue(VAADIN_ADDON_VERSION) == null ? ""
+                                : attribs.getValue(VAADIN_ADDON_VERSION);
+                        String title = attribs.getValue(VAADIN_ADDON_TITLE) == null ? name
+                                : attribs.getValue(VAADIN_ADDON_TITLE);
+
+                        String awidgetsets = attribs
+                                .getValue(VAADIN_ADDON_WIDGETSET) == null ? name
+                                        : attribs.getValue(
+                                                VAADIN_ADDON_WIDGETSET);
+
+                        if (name != null && license != null) {
+                            if (VAADIN_AGPL.equals(license)) {
+                                // For agpl version, we don't care
+                            } else if (VAADIN_CVAL.equals(license)) {
+                                // We only check cval licensed products
+                                CvalInfo info;
+
+                                try {
+                                    info = cvalChecker.validateProduct(name,
+                                            vers,
+                                            title);
+                                    printValidLicense(info, title, vers);
+                                } catch (UnreachableCvalServerException e) {
+                                    info = CvalChecker.parseJson(
+                                            "{'product':{'name':'"
+                                            + name + "'}}");
+                                    printServerUnreachable(title, vers);
+                                }
+//                                for (String w : awidgetsets.split("[, ]+")) {
+//                                    ret.add(new CValUiInfo(title, String
+//                                            .valueOf(computeMajorVersion(vers)),
+//                                            w,
+//                                            info.getType()));
+//                                }
                             }
                         }
                     }
@@ -418,9 +484,12 @@ public class ClassPathExplorer {
         for (File dir : dirs) {
             try {
                 // add the present directory
-                if (!dir.isHidden() && !dir.getPath().contains(File.separator + ".")) {
-                    String key = dir.getCanonicalPath() + "/" + name + dir.getName();
-                    locations.put(key, new URL("file://" + dir.getCanonicalPath()));
+                if (!dir.isHidden() && !dir.getPath().contains(
+                        File.separator + ".")) {
+                    String key = dir.getCanonicalPath() + "/" + name + dir.
+                            getName();
+                    locations.put(key, new URL("file://" + dir.
+                            getCanonicalPath()));
                 }
             } catch (Exception ioe) {
                 return;
@@ -516,4 +585,38 @@ public class ClassPathExplorer {
     static boolean isWidgetset(String gwtModuleName) {
         return gwtModuleName.toLowerCase().contains("widgetset");
     }
+
+    static private void printValidLicense(CvalInfo info, String title,
+            String version) {
+        String msg = info.getMessage();
+        if (msg == null) {
+            String key = "evaluation".equals(info.getType()) ? "evaluation"
+                    : "valid";
+            msg = getErrorMessage(key, title, computeMajorVersion(version),
+                    info.getLicensee());
+        }
+        System.out.println("\n" + LINE + "\n" + msg + "\n" + LINE + "\n");
+    }
+
+    static private void printServerUnreachable(String name, String version) {
+        System.out.println(LINE
+                + "\n"
+                + getErrorMessage("unreachable", name,
+                        computeMajorVersion(version)) + "\n" + LINE);
+    }
+
+    static final int computeMajorVersion(String productVersion) {
+        return productVersion == null || productVersion.isEmpty() ? 0
+                : Integer.parseInt(productVersion.replaceFirst("[^\\d]+.*$", ""));
+    }
+    
+        static String getErrorMessage(String key, Object... pars) {
+        Locale loc = Locale.getDefault();
+        ResourceBundle res = ResourceBundle.getBundle(
+                CvalChecker.class.getName(), loc);
+        String msg = res.getString(key);
+        return new MessageFormat(msg, loc).format(pars);
+    }
+
+
 }

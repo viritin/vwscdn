@@ -132,8 +132,13 @@ public class VWSCDNMojo
                 String path = (String) object;
                 urls.put(path, new File(path).toURI().toURL());
             }
-            Map<String, URL> availableWidgetSets = ClassPathExplorer
-                    .getAvailableWidgetSets(urls);
+            Map<String, URL> availableWidgetSets;
+            try {
+                availableWidgetSets = ClassPathExplorer
+                        .getAvailableWidgetSets(urls);
+            } catch (CvalChecker.InvalidCvalException ex) {
+                throw new MojoExecutionException("Cval license check failed!", ex);
+            }
             Set<Artifact> artifacts = project.getArtifacts();
             for (Artifact artifact : artifacts) {
                 // Store the vaadin version
