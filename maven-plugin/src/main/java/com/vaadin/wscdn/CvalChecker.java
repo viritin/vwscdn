@@ -34,6 +34,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import org.apache.commons.io.IOUtils;
@@ -214,12 +215,14 @@ public final class CvalChecker {
         if (json == null) {
             return null;
         }
-        
+
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             CvalInfo readValue = objectMapper.readValue(json, CvalInfo.class);
             return readValue;
         } catch (Exception e) {
+            Logger.getLogger(CvalChecker.class.getName()).log(Level.WARNING,
+                    "Parsing json message failed: {0}", json);
             throw new RuntimeException(e);
         }
     }
@@ -328,9 +331,19 @@ public final class CvalChecker {
         Preferences p = Preferences.userNodeForPackage(CvalInfo.class);
         String json = p.get(productName, "");
         if (!json.isEmpty()) {
-            CvalInfo info = parseJson(json);
-            if (info != null) {
-                return info;
+            try {
+                CvalInfo info = parseJson(json);
+                if (info != null) {
+                    return info;
+                }
+            } catch (Exception e) {
+                try {
+                    p.clear();
+                } catch (BackingStoreException ex) {
+                    Logger.getLogger(CvalChecker.class.getName()).
+                            log(Level.SEVERE, null, ex);
+                }
+                throw e;
             }
         }
         return null;

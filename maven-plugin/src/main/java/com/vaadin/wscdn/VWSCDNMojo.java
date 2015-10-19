@@ -21,9 +21,7 @@ import com.vaadin.wscdn.client.PublishState;
 import com.vaadin.wscdn.client.WidgetSetRequest;
 import com.vaadin.wscdn.client.WidgetSetResponse;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 

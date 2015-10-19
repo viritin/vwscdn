@@ -291,9 +291,10 @@ public class ClassPathExplorer {
                                             title);
                                     printValidLicense(info, title, vers);
                                 } catch (UnreachableCvalServerException e) {
-                                    info = CvalChecker.parseJson(
-                                            "{'product':{'name':'"
-                                            + name + "'}}");
+                                    info = new CvalInfo();
+                                    final Product product = new Product();
+                                    product.setName(name);
+                                    info.setProduct(product);
                                     printServerUnreachable(title, vers);
                                 }
 //                                for (String w : awidgetsets.split("[, ]+")) {
