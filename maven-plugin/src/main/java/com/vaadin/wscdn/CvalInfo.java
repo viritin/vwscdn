@@ -1,8 +1,12 @@
 package com.vaadin.wscdn;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.beans.Transient;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /*
  * Class used for binding the JSON gotten from server.
@@ -152,6 +156,17 @@ public class CvalInfo {
     boolean isValidInfo(String name, String key) {
         return getProduct() != null && getProduct().getName() != null && getLicenseKey() != null && getProduct().
                 getName().equals(name) && getLicenseKey().equals(key);
+    }
+
+    @Override
+    public String toString() {
+        try {
+            return new ObjectMapper().writeValueAsString(this);
+        } catch (JsonProcessingException ex) {
+            Logger.getLogger(CvalInfo.class.getName()).log(Level.SEVERE, null,
+                    ex);
+            return "{}";
+        }
     }
 
 }

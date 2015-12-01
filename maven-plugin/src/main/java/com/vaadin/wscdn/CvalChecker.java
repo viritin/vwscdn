@@ -15,9 +15,7 @@
  */
 package com.vaadin.wscdn;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.beans.Transient;
 import static java.lang.Integer.parseInt;
 
 import java.io.File;
